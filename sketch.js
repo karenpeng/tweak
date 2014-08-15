@@ -1,14 +1,16 @@
 paper.install(window);
+var drawCanvas = document.getElementById('drawCanvas');
 
 //making a path
-window.onload = function () {
-
+//window.onload = function () {
+function whatever() {
   var path;
   var paths = [];
-
-  paper.setup('myCanvas');
-  var width = document.getElementById('myCanvas').width;
-
+  //TODO: paper is weird, it seems have done something on the canvas
+  paper.setup('drawCanvas');
+  var width = drawCanvas.width;
+  var height = drawCanvas.height;
+  console.log(width, height)
   var tool = new Tool();
 
   var segment;
@@ -19,17 +21,31 @@ window.onload = function () {
     tolerance: 5
   };
 
+  //var drawArea = new Path.Rectangle(10, 10, width / 2, width / 2);
+  // var animiArea = new Path.Rectangle(width / 4 + 10, 10, width / 4, width / 4);
+  //drawArea.strokeColor = 'black';
+  // animiArea.strokeColor = 'black';
+
+  var beginP = new Path.Circle(new Point(20, 40), 20);
+  var endP = new Path.Circle(new Point(640 - 20, 480 - 40),
+    20);
+  beginP.strokeColor = 'black';
+  endP.strokeColor = 'black';
+
   tool.onMouseDown = function (e) {
     if (isDrawingMode) {
-      path = new Path();
-      path.strokeColor = {
-        gradient: {
-          stops: ['blue', 'red', 'yellow']
-        },
-        origin: [0, 0],
-        destination: [width, 0]
-      };
-      path.strokeWidth = 15;
+      if (beginP.bounds.contains(e.point)) {
+        beginP.fillColor = 'blue';
+        path = new Path();
+        path.strokeColor = {
+          gradient: {
+            stops: ['blue', 'red', 'pink']
+          },
+          origin: [0, 0],
+          destination: [640, 0]
+        };
+        path.strokeWidth = 15;
+      }
     } else {
       segment = null;
       path = null;
@@ -40,7 +56,7 @@ window.onload = function () {
       if (e.modifiers.shift) {
         if (hitResult.type === 'segment') {
           hitResult.segment.remove();
-        };
+        }
         return;
       }
       if (hitResult) {
@@ -58,7 +74,12 @@ window.onload = function () {
 
   tool.onMouseDrag = function (e) {
     if (isDrawingMode) {
+      //if (drawArea.bounds.contains(e.point)) {
       path.add(e.point);
+      if (endP.bounds.contains(e.point)) {
+        endP.fillColor = "pink";
+      }
+      // }
     } else if (segment) {
       //console.log(segment.point.x+ " with" + e.delta.x)
       segment.point.x += e.delta.x;
@@ -71,10 +92,15 @@ window.onload = function () {
   };
 
   tool.onMouseUp = function (e) {
-    if (isDrawingMode) {
+    if (isDrawingMode && endP.bounds.contains(e.point)) {
+      endP.fillColor = 'pink';
       path.smooth();
       path.simplify();
-      paths.push(path);
+      // paths.push(path);
+      var value = getValue(path)
+      createAnime(function () {
+        moveBall(value);
+      });
     }
   };
 
@@ -113,6 +139,41 @@ window.onload = function () {
   //4.generative design? Or just a ball?
 
   tool.onKeyDown = function (e) {
-    getValue(path)
+    var value = getValue(path)
+    moveBall(value);
   }
-};
+}
+
+window.onload = function () {
+  whatever();
+}
+
+var animiCanvas = document.getElementById('animiCanvas');
+var animiCtx = animiCanvas.getContext("2d");
+
+function map(para, orMin, orMax, tarMin, tarMax) {
+  var ratio = (para - orMin) / (orMax - orMin);
+  var tarValue = ratio * (tarMax - tarMin) + tarMin;
+  return tarValue;
+}
+
+function drawBall(x, y) {
+  animiCtx.beginPath();
+  animiCtx.arc(x, y, 40, 0, Math.PI * 2);
+  animiCtx.fillStyle = "#ddbb00";
+  animiCtx.fill();
+}
+
+function moveBall(value) {
+  value.forEach(function (point, index) {
+
+  })
+}
+
+function createAnime(callback) {
+  requestAnimationFrame(function () {
+    createAnime(callback);
+  });
+  callback();
+}
+//};
