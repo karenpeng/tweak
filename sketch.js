@@ -1,5 +1,9 @@
 paper.install(window);
 var drawCanvas = document.getElementById('drawCanvas');
+var beginX = 20;
+var beginY = 40;
+var endX = 640 - 20;
+var endY = 480 - 40;
 
 //making a path
 //window.onload = function () {
@@ -98,9 +102,10 @@ function whatever() {
       path.simplify();
       // paths.push(path);
       var value = getValue(path)
-      createAnime(function () {
-        moveBall(value);
-      });
+      console.log(value)
+      // createAnime(function () {
+      //   moveBall(value);
+      // });
     }
   };
 
@@ -117,15 +122,18 @@ function whatever() {
 
   //gatting value
   function getValue(pathP) {
+    var curvePoints = [];
     for (var i = 0; i < pathP.curves.length; i++) {
       var curve = pathP.curves[i];
-      var interval = 5;
+      var interval = 10;
       //console.log(curve.length)
       for (var j = 1; j <= curve.length; j += interval) {
         var curvePosition = curve.getLocationAt(j / curve.length);
         //console.log(curvePosition.point.x, curvePosition.point.y)
+        curvePoints.push([curvePosition.point.x, curvePosition.point.y]);
       }
     }
+    return curvePoints;
   }
   //TODO:
   //0.add begin and end point
@@ -139,8 +147,9 @@ function whatever() {
   //4.generative design? Or just a ball?
 
   tool.onKeyDown = function (e) {
-    var value = getValue(path)
-    moveBall(value);
+    //var value = getValue(path)
+    //moveBall(value);
+    //console.log(value)
   }
 }
 
@@ -150,6 +159,7 @@ window.onload = function () {
 
 var animiCanvas = document.getElementById('animiCanvas');
 var animiCtx = animiCanvas.getContext("2d");
+var boo = new Ball(640 / 2, beginY, 640 / 2, endY);
 
 function map(para, orMin, orMax, tarMin, tarMax) {
   var ratio = (para - orMin) / (orMax - orMin);
@@ -157,17 +167,32 @@ function map(para, orMin, orMax, tarMin, tarMax) {
   return tarValue;
 }
 
-function drawBall(x, y) {
+function Ball(beginX, beginY, endX, endY) {
+  this.x = beginX;
+  this.y = beginY;
+  this.beginX = beginX;
+  this.beginY = beginY;
+  this.endX = endX;
+  this.endY = endY;
+}
+ball.prototype.draw = function () {
   animiCtx.beginPath();
-  animiCtx.arc(x, y, 40, 0, Math.PI * 2);
+  animiCtx.arc(this.x, this.y, 40, 0, Math.PI * 2);
   animiCtx.fillStyle = "#ddbb00";
   animiCtx.fill();
-}
+};
+
+var i = 0;
 
 function moveBall(value) {
-  value.forEach(function (point, index) {
+  // value.forEach(function (point, index) {
 
-  })
+  // });
+  var moveHeight = endY - beginY;
+  ball.y = value[i].y;
+  i++;
+  if (i > value.length) i = 0;
+  ball.draw();
 }
 
 function createAnime(callback) {
