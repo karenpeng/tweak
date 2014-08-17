@@ -8,15 +8,9 @@
         left: 0;
       }
       #canvasGroup{
-        margin: 10px auto;
+        margin: 100px auto;
         padding: 0;
         width: 1310px;
-      }
-      #drawCanvas, #animiCanvas{
-        width: 1280px;
-        height: 480px;
-        margin: 2px;
-        /*border: 1px solid black;*/
       }
       #mode{
         position: absolute;
@@ -27,13 +21,13 @@
   </head>
   <body>
     <div id="canvasGroup">
-     <canvas id="drawCanvas"></canvas>
-     <!--<canvas id="animiCanvas"></canvas>-->
     </div>
-    <button id="mode" onclick="myFunction()">draw mode</button>
+  <button id="mode" onclick="myFunction()">draw mode</button>
   </body>
+   <!--
+  <script type="text/javascript" src="sketch.js"></script>-->
   <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/paper.js/0.9.18/paper-full.min.js"></script>
-  <script type="text/javascript">
+    <script type="text/javascript">
     var mode = document.getElementById('mode')
     var isDrawingMode = true;
     function myFunction(){
@@ -45,5 +39,6 @@
       }
     }
   </script>
-  <script type="text/javascript" src="sketch.js"></script>
+  <script type="text/javascript" src="bundle.js"></script>
+  <!--<script type="text/javascript" src="test.js"></script>-->
 </html>
