@@ -23,7 +23,8 @@ module.exports = function (canvasGroup, itr) {
     var time = 0;
     var isDrawingDones = [];
     isDrawingDones[itr] = false;
-    var path;
+    var paths = [];
+    paths[itr] = new paper.Path();
     var tools = [];
     tools[itr] = new paper.Tool();
 
@@ -66,7 +67,7 @@ module.exports = function (canvasGroup, itr) {
     function getValue() {
       var value = [];
       verticalPaths.forEach(function (pa) {
-        var intersections = path.getIntersections(pa);
+        var intersections = paths[itr].getIntersections(pa);
         intersections.forEach(function (intersection) {
           value.push([intersection.point.x, intersection.point.y]);
         });
@@ -83,19 +84,20 @@ module.exports = function (canvasGroup, itr) {
     };
 
     tools[itr].onMouseDown = function (e) {
+      console.log(itr)
       if (isDrawingMode) {
         if (beginP.bounds.contains(e.point)) {
           beginP.fillColor = 'blue';
-          path = new paper.Path();
-          path.strokeColor = {
+          //path = new paper.Path();
+          paths[itr].strokeColor = {
             gradient: {
               stops: ['blue', 'green', 'yellow']
             },
             origin: [0, 0],
             destination: [width, 0]
           };
-          path.strokeWidth = 8;
-          path.add(new paper.Point(beginX, beginY));
+          paths[itr].strokeWidth = 8;
+          paths[itr].add(new paper.Point(beginX, beginY));
         }
       } else {
         hitSegment = null;
@@ -114,8 +116,8 @@ module.exports = function (canvasGroup, itr) {
             hitSegment = hitResult.segment;
           } else if (hitResult.type === 'stroke') {
             var location = hitResult.location;
-            hitSegment = path.insert(location.index + 1, e.point);
-            path.smooth();
+            hitSegment = paths[itr].insert(location.index + 1, e.point);
+            paths[itr].smooth();
           }
         }
       }
@@ -123,14 +125,13 @@ module.exports = function (canvasGroup, itr) {
 
     tools[itr].onMouseDrag = function (e) {
       if (isDrawingMode) {
-        console.log(e.point.x, e.point.y)
         if (drawArea.bounds.contains(e.point)) {
-          path.segments.forEach(function (s, index) {
+          paths[itr].segments.forEach(function (s, index) {
             if (s.point.x >= e.point.x) {
-              path.removeSegment(index);
+              paths[itr].removeSegment(index);
             }
           });
-          path.add(e.point);
+          paths[itr].add(e.point);
           if (endP.bounds.contains(e.point)) {
             endP.fillColor = "yellow";
           }
@@ -138,26 +139,27 @@ module.exports = function (canvasGroup, itr) {
       } else if (hitSegment) {
         var index = hitSegment.index;
         hitSegment.point.x += e.delta.x;
-        hitSegment.point.x = constrain(hitSegment.point.x, path.segments[
-            index - 1].point.x + 0.0000001, path.segments[index + 1].point.x -
+        hitSegment.point.x = constrain(hitSegment.point.x, paths[itr].segments[
+            index - 1].point.x + 0.0000001, paths[itr].segments[index + 1].point
+          .x -
           0.0000001);
         hitSegment.point.y += e.delta.y;
-        path.smooth();
+        paths[itr].smooth();
       }
     };
 
     tools[itr].onMouseUp = function (e) {
       if (isDrawingMode) {
         if (!endP.bounds.contains(e.point)) {
-          path.add(new paper.Point(endX, endY));
+          paths[itr].add(new paper.Point(endX, endY));
         }
         endP.fillColor = 'yellow';
-        path.smooth();
-        path.simplify();
-        path.firstSegment.point.x = beginX;
-        path.firstSegment.point.y = beginY;
-        path.lastSegment.point.x = endX;
-        path.lastSegment.point.y = endY;
+        paths[itr].smooth();
+        paths[itr].simplify();
+        paths[itr].firstSegment.point.x = beginX;
+        paths[itr].firstSegment.point.y = beginY;
+        paths[itr].lastSegment.point.x = endX;
+        paths[itr].lastSegment.point.y = endY;
         isDrawingDones[itr] = true;
       }
     };
@@ -194,66 +196,6 @@ module.exports = function (canvasGroup, itr) {
   //console.log(paperScrope.project)
 }
 },{}],2:[function(require,module,exports){
-"use strict"
-
-function unique_pred(list, compare) {
-  var ptr = 1
-    , len = list.length
-    , a=list[0], b=list[0]
-  for(var i=1; i<len; ++i) {
-    b = a
-    a = list[i]
-    if(compare(a, b)) {
-      if(i === ptr) {
-        ptr++
-        continue
-      }
-      list[ptr++] = a
-    }
-  }
-  list.length = ptr
-  return list
-}
-
-function unique_eq(list) {
-  var ptr = 1
-    , len = list.length
-    , a=list[0], b = list[0]
-  for(var i=1; i<len; ++i, b=a) {
-    b = a
-    a = list[i]
-    if(a !== b) {
-      if(i === ptr) {
-        ptr++
-        continue
-      }
-      list[ptr++] = a
-    }
-  }
-  list.length = ptr
-  return list
-}
-
-function unique(list, compare, sorted) {
-  if(list.length === 0) {
-    return list
-  }
-  if(compare) {
-    if(!sorted) {
-      list.sort(compare)
-    }
-    return unique_pred(list, compare)
-  }
-  if(!sorted) {
-    list.sort()
-  }
-  return unique_eq(list)
-}
-
-module.exports = unique
-
-},{}],3:[function(require,module,exports){
-var uniq = require('uniq');
 var can = require("./can");
 //paper.install(window);
 //var i = 0;
@@ -268,4 +210,4 @@ window.onload = function () {
 // var drawCanvas = document.createElement('canvas');
 // drawCanvas.setAttribute('id', 'drawCanvas' + 0);
 // canvasGroup.appendChild(drawCanvas);
-},{"./can":1,"uniq":2}]},{},[3]);
+},{"./can":1}]},{},[2]);

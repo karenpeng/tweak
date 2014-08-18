@@ -1,4 +1,3 @@
-var uniq = require('uniq');
 var can = require("./can");
 //paper.install(window);
 //var i = 0;
