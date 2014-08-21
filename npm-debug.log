@@ -1,0 +1,176 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node',
+1 verbose cli   '/usr/local/bin/npm',
+1 verbose cli   'install',
+1 verbose cli   '-g',
+1 verbose cli   'watchify' ]
+2 info using npm@1.4.21
+3 info using node@v0.10.30
+4 verbose cache add [ 'watchify', null ]
+5 verbose cache add name=undefined spec="watchify" args=["watchify",null]
+6 verbose parsed url { protocol: null,
+6 verbose parsed url   slashes: null,
+6 verbose parsed url   auth: null,
+6 verbose parsed url   host: null,
+6 verbose parsed url   port: null,
+6 verbose parsed url   hostname: null,
+6 verbose parsed url   hash: null,
+6 verbose parsed url   search: null,
+6 verbose parsed url   query: null,
+6 verbose parsed url   pathname: 'watchify',
+6 verbose parsed url   path: 'watchify',
+6 verbose parsed url   href: 'watchify' }
+7 silly lockFile f821d843-watchify watchify
+8 verbose lock watchify /Users/karen/.npm/f821d843-watchify.lock
+9 silly lockFile f821d843-watchify watchify
+10 silly lockFile f821d843-watchify watchify
+11 verbose addNamed [ 'watchify', '' ]
+12 verbose addNamed [ null, '*' ]
+13 silly lockFile 19227da7-watchify watchify@
+14 verbose lock watchify@ /Users/karen/.npm/19227da7-watchify.lock
+15 silly addNameRange { name: 'watchify', range: '*', hasData: false }
+16 verbose request where is /watchify
+17 verbose request registry https://registry.npmjs.org/
+18 verbose request id 96d79e1493ba3bb9
+19 verbose url raw /watchify
+20 verbose url resolving [ 'https://registry.npmjs.org/', './watchify' ]
+21 verbose url resolved https://registry.npmjs.org/watchify
+22 verbose request where is https://registry.npmjs.org/watchify
+23 info trying registry request attempt 1 at 00:29:17
+24 verbose etag "56JHPDHLEDG0A6CKHYGWIB7XH"
+25 http GET https://registry.npmjs.org/watchify
+26 http 304 https://registry.npmjs.org/watchify
+27 silly registry.get cb [ 304,
+27 silly registry.get   { date: 'Wed, 20 Aug 2014 04:29:17 GMT',
+27 silly registry.get     server: 'Apache',
+27 silly registry.get     via: '1.1 varnish',
+27 silly registry.get     'last-modified': 'Wed, 20 Aug 2014 04:29:17 GMT',
+27 silly registry.get     'cache-control': 'max-age=60',
+27 silly registry.get     etag: '"56JHPDHLEDG0A6CKHYGWIB7XH"',
+27 silly registry.get     'x-served-by': 'cache-iad2126-IAD',
+27 silly registry.get     'x-cache': 'HIT',
+27 silly registry.get     'x-cache-hits': '1',
+27 silly registry.get     'x-timer': 'S1408508957.214198,VS0,VE408',
+27 silly registry.get     vary: 'Accept',
+27 silly registry.get     'content-length': '0',
+27 silly registry.get     'keep-alive': 'timeout=10, max=50',
+27 silly registry.get     connection: 'Keep-Alive' } ]
+28 verbose etag https://registry.npmjs.org/watchify from cache
+29 silly addNameRange number 2 { name: 'watchify', range: '*', hasData: true }
+30 silly addNameRange versions [ 'watchify',
+30 silly addNameRange   [ '0.0.0',
+30 silly addNameRange     '0.0.1',
+30 silly addNameRange     '0.1.0',
+30 silly addNameRange     '0.2.0',
+30 silly addNameRange     '0.3.0',
+30 silly addNameRange     '0.4.0',
+30 silly addNameRange     '0.4.1',
+30 silly addNameRange     '0.5.0',
+30 silly addNameRange     '0.5.1',
+30 silly addNameRange     '0.5.2',
+30 silly addNameRange     '0.5.3',
+30 silly addNameRange     '0.5.4',
+30 silly addNameRange     '0.5.5',
+30 silly addNameRange     '0.5.6',
+30 silly addNameRange     '0.6.0',
+30 silly addNameRange     '0.6.1',
+30 silly addNameRange     '0.6.2',
+30 silly addNameRange     '0.6.3',
+30 silly addNameRange     '0.6.4',
+30 silly addNameRange     '0.7.0',
+30 silly addNameRange     '0.7.1',
+30 silly addNameRange     '0.7.2',
+30 silly addNameRange     '0.8.0',
+30 silly addNameRange     '0.8.1',
+30 silly addNameRange     '0.8.2',
+30 silly addNameRange     '0.8.3',
+30 silly addNameRange     '0.9.0',
+30 silly addNameRange     '0.10.0',
+30 silly addNameRange     '0.10.1',
+30 silly addNameRange     '0.10.2',
+30 silly addNameRange     '1.0.0',
+30 silly addNameRange     '1.0.1',
+30 silly addNameRange     '1.0.2' ] ]
+31 verbose addNamed [ 'watchify', '1.0.2' ]
+32 verbose addNamed [ '1.0.2', '1.0.2' ]
+33 silly lockFile cd9da8fd-watchify-1-0-2 watchify@1.0.2
+34 verbose lock watchify@1.0.2 /Users/karen/.npm/cd9da8fd-watchify-1-0-2.lock
+35 silly lockFile cd9da8fd-watchify-1-0-2 watchify@1.0.2
+36 silly lockFile cd9da8fd-watchify-1-0-2 watchify@1.0.2
+37 silly lockFile 19227da7-watchify watchify@
+38 silly lockFile 19227da7-watchify watchify@
+39 silly resolved [ { name: 'watchify',
+39 silly resolved     version: '1.0.2',
+39 silly resolved     description: 'watch mode for browserify builds',
+39 silly resolved     main: 'index.js',
+39 silly resolved     bin: { watchify: 'bin/cmd.js' },
+39 silly resolved     dependencies: { browserify: '^5.5.0', chokidar: '~0.8.2', through2: '~0.5.1' },
+39 silly resolved     devDependencies:
+39 silly resolved      { brfs: '^1.0.1',
+39 silly resolved        mkdirp: '~0.3.5',
+39 silly resolved        split: '~0.3.0',
+39 silly resolved        tape: '^2.12.3' },
+39 silly resolved     scripts: { test: 'tape test/*.js' },
+39 silly resolved     repository: { type: 'git', url: 'git://github.com/substack/watchify.git' },
+39 silly resolved     homepage: 'https://github.com/substack/watchify',
+39 silly resolved     keywords:
+39 silly resolved      [ 'browserify',
+39 silly resolved        'browserify-tool',
+39 silly resolved        'watch',
+39 silly resolved        'bundle',
+39 silly resolved        'build',
+39 silly resolved        'browser' ],
+39 silly resolved     author:
+39 silly resolved      { name: 'James Halliday',
+39 silly resolved        email: 'mail@substack.net',
+39 silly resolved        url: 'http://substack.net' },
+39 silly resolved     license: 'MIT',
+39 silly resolved     gitHead: 'd248c35cefe1f29dce0efb3036653c698b1598b0',
+39 silly resolved     bugs: { url: 'https://github.com/substack/watchify/issues' },
+39 silly resolved     _id: 'watchify@1.0.2',
+39 silly resolved     _shasum: '91ed40a9f79c64c670e4fde598fbff1ffa905d31',
+39 silly resolved     _from: 'watchify@',
+39 silly resolved     _npmVersion: '1.4.23',
+39 silly resolved     _npmUser: { name: 'substack', email: 'mail@substack.net' },
+39 silly resolved     maintainers: [ [Object] ],
+39 silly resolved     dist:
+39 silly resolved      { shasum: '91ed40a9f79c64c670e4fde598fbff1ffa905d31',
+39 silly resolved        tarball: 'http://registry.npmjs.org/watchify/-/watchify-1.0.2.tgz' },
+39 silly resolved     directories: {},
+39 silly resolved     _resolved: 'https://registry.npmjs.org/watchify/-/watchify-1.0.2.tgz',
+39 silly resolved     readme: 'ERROR: No README data found!' } ]
+40 info install watchify@1.0.2 into /usr/local/lib
+41 info installOne watchify@1.0.2
+42 verbose lib/node_modules/watchify unbuild
+43 info preuninstall watchify@1.0.2
+44 info uninstall watchify@1.0.2
+45 verbose true,/usr/local/lib/node_modules,/usr/local/lib/node_modules unbuild watchify@1.0.2
+46 verbose /usr/local/bin,[object Object] binRoot
+47 info postuninstall watchify@1.0.2
+48 verbose lib/node_modules/watchify unbuild
+49 info preuninstall watchify@1.0.2
+50 info uninstall watchify@1.0.2
+51 verbose true,/usr/local/lib/node_modules,/usr/local/lib/node_modules unbuild watchify@1.0.2
+52 verbose /usr/local/bin,[object Object] binRoot
+53 info postuninstall watchify@1.0.2
+54 error error rolling back Error: EACCES, unlink '/usr/local/lib/node_modules/watchify'
+54 error error rolling back  watchify@1.0.2 { [Error: EACCES, unlink '/usr/local/lib/node_modules/watchify']
+54 error error rolling back   errno: 3,
+54 error error rolling back   code: 'EACCES',
+54 error error rolling back   path: '/usr/local/lib/node_modules/watchify' }
+55 error Error: EACCES, unlink '/usr/local/lib/node_modules/watchify'
+55 error  { [Error: EACCES, unlink '/usr/local/lib/node_modules/watchify']
+55 error   errno: 3,
+55 error   code: 'EACCES',
+55 error   path: '/usr/local/lib/node_modules/watchify' }
+56 error Please try running this command again as root/Administrator.
+57 error System Darwin 12.5.0
+58 error command "/usr/local/bin/node" "/usr/local/bin/npm" "install" "-g" "watchify"
+59 error cwd /Users/karen/Documents/my_project/tweak
+60 error node -v v0.10.30
+61 error npm -v 1.4.21
+62 error path /usr/local/lib/node_modules/watchify
+63 error code EACCES
+64 error errno 3
+65 error stack Error: EACCES, unlink '/usr/local/lib/node_modules/watchify'
+66 verbose exit [ 3, true ]

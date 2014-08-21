@@ -1,4 +1,4 @@
-var watchify = require('watchify');
+//var watchify = require('watchify');
 var can = require("./can");
 
 //paper.install(window);
