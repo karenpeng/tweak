@@ -10,7 +10,19 @@
 
 //with(paper) {
 
-function littleCanvas(beginPointX, beginPointY, map, constrain) {
+function map(para, orMin, orMax, tarMin, tarMax) {
+  var ratio = (para - orMin) / (orMax - orMin);
+  var tarValue = ratio * (tarMax - tarMin) + tarMin;
+  return tarValue;
+}
+
+function constrain(item, min, max) {
+  if (item < min) return min;
+  else if (item > max) return max;
+  else return item;
+}
+
+function littleCanvas(beginPointX, beginPointY) {
   this.width = 320;
   this.height = 240;
   this.radius = 5;
@@ -18,12 +30,12 @@ function littleCanvas(beginPointX, beginPointY, map, constrain) {
   this.beginY = beginPointY + this.radius;
   this.endX = beginPointX + this.width - this.radius;
   this.endY = beginPointY + this.height - this.radius;
-  this.interval = 5;
+  this.interval = 10;
   this.time = 0;
+  this.isDrawingStart = false;
   this.isDrawingDone = false;
   this.path = new paper.Path();
-  this.value = [];
-  this.hitSegment;
+  //this.value = [];
 
   //making begin and end point
   this.beginP = new paper.Path.Circle(this.beginX, this.beginY, this.radius);
@@ -62,38 +74,42 @@ function littleCanvas(beginPointX, beginPointY, map, constrain) {
 }
 
 littleCanvas.prototype.onMouseDown = function (e) {
-  if (isDrawingMode) {
-    if (this.beginP.bounds.contains(e.point)) {
-      this.beginP.fillColor = 'blue';
-      this.path.strokeColor = {
-        gradient: {
-          stops: ['blue', 'green', 'yellow']
-        },
-        origin: [0, 0],
-        destination: [this.endX, this.beginX]
-      };
-      this.path.strokeWidth = 8;
-      this.path.add(new paper.Point(this.beginX, this.beginY));
-    }
-  } else {
-    this.hitSegment = null;
-    var hitResult = paper.project.hitTest(e.point, this.hitOptions);
-    if (!hitResult) {
-      return;
-    }
-    if (e.modifiers.shift) {
-      if (hitResult.type === 'segment') {
-        hitResult.segment.remove();
+  if (this.drawArea.bounds.contains(e.point)) {
+    if (isDrawingMode) {
+      if (this.beginP.bounds.contains(e.point)) {
+        this.beginP.fillColor = 'blue';
+        this.path.strokeColor = {
+          gradient: {
+            stops: ['blue', 'green', 'yellow']
+          },
+          origin: [0, 0],
+          destination: [this.endX, this.beginX]
+        };
+        this.path.strokeWidth = 8;
+        this.path.add(new paper.Point(this.beginX - this.radius, this.beginY));
+        this.isDrawingStart = true;
       }
-      return;
-    }
-    if (hitResult) {
-      if (hitResult.type === 'segment') {
-        this.hitSegment = hitResult.segment;
-      } else if (hitResult.type === 'stroke') {
-        var location = hitResult.location;
-        this.hitSegment = this.path.insert(location.index + 1, e.point);
-        this.path.smooth();
+    } else {
+      this.hitSegment = null;
+      var hitResult = paper.project.hitTest(e.point, this.hitOptions);
+      if (!hitResult) {
+        return;
+      }
+      if (e.modifiers.shift) {
+        if (hitResult.type === 'segment') {
+          hitResult.segment.remove();
+        }
+        return;
+      }
+      if (hitResult) {
+        if (hitResult.type === 'segment') {
+          this.hitSegment = hitResult.segment;
+          //console.log(this.hitSegment)
+        } else if (hitResult.type === 'stroke') {
+          var location = hitResult.location;
+          this.hitSegment = this.path.insert(location.index + 1, e.point);
+          this.path.smooth();
+        }
       }
     }
   }
@@ -101,8 +117,8 @@ littleCanvas.prototype.onMouseDown = function (e) {
 
 littleCanvas.prototype.onMouseDrag = function (e) {
   var that = this;
-  if (isDrawingMode) {
-    if (this.drawArea.bounds.contains(e.point)) {
+  if (this.drawArea.bounds.contains(e.point)) {
+    if (isDrawingMode) {
       this.path.segments.forEach(function (s, index) {
         if (s.point.x >= e.point.x) {
           that.path.removeSegment(index);
@@ -112,32 +128,39 @@ littleCanvas.prototype.onMouseDrag = function (e) {
       if (this.endP.bounds.contains(e.point)) {
         this.endP.fillColor = "yellow";
       }
+    } else if (this.hitSegment) {
+      var index = this.hitSegment.index;
+      //console.log(this)
+      //console.log(this.hitSegment, index)
+      this.hitSegment.point.y += e.delta.y;
+      this.hitSegment.point.x += e.delta.x;
+      // console.log(this.path.segments[index + 1]);
+      this.hitSegment.point.x = constrain(this.hitSegment.point.x, this.path.segments[
+          index - 1].point.x + 0.0000001, this.path.segments[index + 1]
+        .point.x -
+        0.0000001);
+      this.path.smooth();
     }
-  } else if (this.hitSegment) {
-    var index = this.hitSegment.index;
-    this.hitSegment.point.x += e.delta.x;
-    this.hitSegment.point.x = constrain(this.hitSegment.point.x, this.path.segments[
-        index - 1].point.x + 0.0000001, this.path.segments[index + 1].point.x -
-      0.0000001);
-    this.hitSegment.point.y += e.delta.y;
-    this.path.smooth();
   }
 };
 
 littleCanvas.prototype.onMouseUp = function (e) {
   if (isDrawingMode) {
-    if (!this.endP.bounds.contains(e.point)) {
-      //console.log(this.path instanceof paper.Path)
-      this.path.add(new paper.Point(this.endX, this.endY));
+    if (this.isDrawingStart) {
+      if (!this.endP.bounds.contains(e.point)) {
+        //console.log(this.path instanceof paper.Path)
+        this.path.add(new paper.Point(this.endX, this.endY));
+      }
+      this.endP.fillColor = 'yellow';
+      this.path.smooth();
+      this.path.simplify();
+      this.path.firstSegment.point.x = this.beginX;
+      this.path.firstSegment.point.y = this.beginY;
+      this.path.lastSegment.point.x = this.endX;
+      this.path.lastSegment.point.y = this.endY;
+      this.isDrawingDone = true;
+      this.isDrawingStart = false;
     }
-    this.endP.fillColor = 'yellow';
-    this.path.smooth();
-    this.path.simplify();
-    this.path.firstSegment.point.x = this.beginX;
-    this.path.firstSegment.point.y = this.beginY;
-    this.path.lastSegment.point.x = this.endX;
-    this.path.lastSegment.point.y = this.endY;
-    this.isDrawingDone = true;
   }
 };
 
@@ -151,11 +174,11 @@ littleCanvas.prototype.getValue = function () {
       //console.log(that)
     });
   });
-  console.log(this.value !== []);
+  //console.log(this.value !== []);
 };
 
 littleCanvas.prototype.mapValue = function () {
-  console.log(this.value)
+  //console.log(this.value)
   this.boo.position.y = this.value[this.time][1];
   // this.boo.fillColor.hue = map(this.boo.position.y, this.beginY, this.endY, 240,
   //   60);
