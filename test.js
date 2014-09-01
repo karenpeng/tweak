@@ -15,13 +15,12 @@ paper.setup(myCanvas);
 //var drawCanvas = require('./drawCanvas');
 //var mainControl = require('./mainControl');
 var littleCanvases = [];
-var CodeMirror = require('codemirror');
+//var CodeMirror = require('codemirror');
 
 // var myCodeMirror = CodeMirror(document.body, {
 //   value: "function myScript(){return 100;}\n",
 //   mode: "javascript"
 // });
-
 
 window.onload = function () {
 
