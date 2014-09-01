@@ -80,12 +80,12 @@ littleCanvas.prototype.onMouseDown = function (e) {
         this.beginP.fillColor = 'blue';
         this.path.strokeColor = {
           gradient: {
-            stops: ['blue', 'green', 'yellow']
+            stops: ['blue', 'red', 'yellow']
           },
-          origin: [0, 0],
-          destination: [this.endX, this.beginX]
+          origin: [this.beginX, this.beginY],
+          destination: [this.endX, this.endY]
         };
-        this.path.strokeWidth = 8;
+        this.path.strokeWidth = 4;
         this.path.add(new paper.Point(this.beginX - this.radius, this.beginY));
         this.isDrawingStart = true;
       }

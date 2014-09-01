@@ -1,6 +1,6 @@
 //var watchify = require('watchify');
 //var can = require("./can");
-var myCanvas = document.getElementById('myCanvas');
+//var myCanvas = document.getElementById('myCanvas');
 paper.setup(myCanvas);
 //paper.install(window);
 //var i = 0; window.onload = function () {
@@ -12,8 +12,16 @@ paper.setup(myCanvas);
 //var drawCanvas = require('./drawCanvas');
 //var mainControl = require('./mainControl');
 var littleCanvases = [];
+var CodeMirror = require('codemirror');
+
+// var myCodeMirror = CodeMirror(document.body, {
+//   value: "function myScript(){return 100;}\n",
+//   mode: "javascript"
+// });
+
 
 window.onload = function () {
+
   for (var itr = 0; itr < 3; itr++) {
     //can(itr * 340 + 20, 40);
     littleCanvases[itr] = new littleCanvas(itr * 340 + 20, 40);
@@ -55,14 +63,13 @@ window.onload = function () {
 
   paper.view.onFrame = function (e) {
     frameCount++;
-    if (frameCount % 4 === 0) {
+    if (frameCount % 6 === 0) {
       littleCanvases.forEach(function (c) {
         if (isDrawingMode) {
           if (c.isDrawingDone) {
             c.getValue();
             c.mapValue();
           }
-
         } else {
           c.time = 0;
         }
