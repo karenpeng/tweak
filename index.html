@@ -7,6 +7,11 @@
         top: 0;
         left: 0;
       }
+      #myCanvas{
+        width: 1280px;
+        height: 720px;
+        margin: 20px auto;
+      }
       #canvasGroup{
         margin: 100px auto;
         padding: 0;
@@ -20,7 +25,8 @@
     </style>
   </head>
   <body>
-    <div id="canvasGroup">
+    <canvas id="myCanvas" width="1280" height="720"></canvas>
+    <!--<div id="canvasGroup">-->
     </div>
   <button id="mode" onclick="myFunction()">draw mode</button>
   </body>
@@ -39,6 +45,7 @@
       }
     }
   </script>
-  <script type="text/javascript" src="bundle.js"></script>
-  <!--<script type="text/javascript" src="test.js"></script>-->
+  <!--<script type="text/javascript" src="bundle.js"></script>-->
+  <script type="text/javascript" src="drawCanvas.js"></script>
+  <script type="text/javascript" src="test.js"></script>
 </html>
