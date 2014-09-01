@@ -1,21 +1,8 @@
-//true detective
-//mmm
-
-//var watchify = require('watchify');
-//var can = require("./can");
-//var myCanvas = document.getElementById('myCanvas');
 paper.setup(myCanvas);
-//paper.install(window);
-//var i = 0; window.onload = function () {
-// var canvasGroup = document.getElementById('canvasGroup');
-//with(paper){
 
-//var map = require('./map');
-//var constrain = require('./constrain');
-//var drawCanvas = require('./drawCanvas');
-//var mainControl = require('./mainControl');
+var LittleCanvas = require('./drawCanvas');
 var littleCanvases = [];
-//var CodeMirror = require('codemirror');
+var CodeMirror = require('codemirror');
 
 // var myCodeMirror = CodeMirror(document.body, {
 //   value: "function myScript(){return 100;}\n",
@@ -25,11 +12,8 @@ var littleCanvases = [];
 window.onload = function () {
 
   for (var itr = 0; itr < 3; itr++) {
-    //can(itr * 340 + 20, 40);
-    littleCanvases[itr] = new littleCanvas(itr * 340 + 20, 40);
-    //console.log(map)
+    littleCanvases[itr] = new LittleCanvas(itr * 340 + 20, 40);
   }
-  //var main = new mainControl(littleCanvases);
   var tool = new paper.Tool();
   var frameCount = 0;
 
@@ -79,11 +63,3 @@ window.onload = function () {
     }
   };
 };
-//}
-
-// var canvasGroup = document.getElementById('canvasGroup');
-// var drawCanvas = document.createElement('canvas');
-// drawCanvas.setAttribute('id', 'drawCanvas' + 0);
-// canvasGroup.appendChild(drawCanvas);
-
-//MVC???

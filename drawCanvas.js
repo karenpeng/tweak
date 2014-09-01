@@ -1,28 +1,9 @@
-// var drawCanvas = document.createElement('canvas');
-// drawCanvas.setAttribute('id', 'drawCanvas' + itr);
-// drawCanvas.setAttribute('height', '200px');
-// drawCanvas.setAttribute('style', 'padding:5px; margin:0;');
-// canvasGroup.appendChild(drawCanvas);
+module.exports = LittleCanvas;
 
-// var canvasId = 'drawCanvas' + itr;
-// paper.setup(canvasId);
-//console.log(paper.projects)
+var map = require('./map');
+var constrain = require('./constrain');
 
-//with(paper) {
-
-function map(para, orMin, orMax, tarMin, tarMax) {
-  var ratio = (para - orMin) / (orMax - orMin);
-  var tarValue = ratio * (tarMax - tarMin) + tarMin;
-  return tarValue;
-}
-
-function constrain(item, min, max) {
-  if (item < min) return min;
-  else if (item > max) return max;
-  else return item;
-}
-
-function littleCanvas(beginPointX, beginPointY) {
+function LittleCanvas(beginPointX, beginPointY) {
   this.width = 320;
   this.height = 240;
   this.radius = 5;
@@ -73,7 +54,7 @@ function littleCanvas(beginPointX, beginPointY) {
   };
 }
 
-littleCanvas.prototype.onMouseDown = function (e) {
+LittleCanvas.prototype.onMouseDown = function (e) {
   if (this.drawArea.bounds.contains(e.point)) {
     if (isDrawingMode) {
       if (this.beginP.bounds.contains(e.point)) {
@@ -115,7 +96,7 @@ littleCanvas.prototype.onMouseDown = function (e) {
   }
 };
 
-littleCanvas.prototype.onMouseDrag = function (e) {
+LittleCanvas.prototype.onMouseDrag = function (e) {
   var that = this;
   if (this.drawArea.bounds.contains(e.point)) {
     if (isDrawingMode) {
@@ -144,7 +125,7 @@ littleCanvas.prototype.onMouseDrag = function (e) {
   }
 };
 
-littleCanvas.prototype.onMouseUp = function (e) {
+LittleCanvas.prototype.onMouseUp = function (e) {
   if (isDrawingMode) {
     if (this.isDrawingStart) {
       if (!this.endP.bounds.contains(e.point)) {
@@ -164,7 +145,7 @@ littleCanvas.prototype.onMouseUp = function (e) {
   }
 };
 
-littleCanvas.prototype.getValue = function () {
+LittleCanvas.prototype.getValue = function () {
   this.value = [];
   var that = this;
   this.verticalPaths.forEach(function (pa) {
@@ -177,7 +158,7 @@ littleCanvas.prototype.getValue = function () {
   //console.log(this.value !== []);
 };
 
-littleCanvas.prototype.mapValue = function () {
+LittleCanvas.prototype.mapValue = function () {
   //console.log(this.value)
   this.boo.position.y = this.value[this.time][1];
   // this.boo.fillColor.hue = map(this.boo.position.y, this.beginY, this.endY, 240,
@@ -185,17 +166,3 @@ littleCanvas.prototype.mapValue = function () {
   this.time++;
   if (this.time >= this.value.length) this.time = 0;
 };
-
-//TODO:
-
-//1.hooking up for use, css3!!!!
-
-//3.i think it should involves live coding, the code control all the canvas
-
-//4.generative design? Or just a ball?
-
-//  }
-//  whatever();
-
-//console.log(paperScrope.project)
-//module.exports = littleCanvas;
