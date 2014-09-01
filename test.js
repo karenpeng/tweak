@@ -1,3 +1,6 @@
+//true detective
+//mmm
+
 //var watchify = require('watchify');
 //var can = require("./can");
 //var myCanvas = document.getElementById('myCanvas');
