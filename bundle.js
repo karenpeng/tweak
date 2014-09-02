@@ -28,14 +28,14 @@ function LittleCanvas(beginPointX, beginPointY) {
   //making begin and end point
   this.beginP = new paper.Path.Circle(this.beginX, this.beginY, this.radius);
   this.endP = new paper.Path.Circle(this.endX, this.endY, this.radius);
-  this.beginP.strokeColor = 'black';
-  this.endP.strokeColor = 'black';
+  this.beginP.strokeColor = 'white';
+  this.endP.strokeColor = 'white';
 
   //making draw area
   this.drawArea = new paper.Path.Rectangle(beginPointX, beginPointY,
     this.width,
     this.height);
-  this.drawArea.strokeColor = 'black';
+  this.drawArea.strokeColor = 'white';
 
   //set hitOptions for edite
   this.hitOptions = {
@@ -190,7 +190,7 @@ LittleCanvas.prototype.setInput = function (property, start, end,
     this.boo = new paper.Path.Circle(this.beginX + this.width, this.beginY,
       this.radius);
   }
-  this.boo.fillColor = 'blue';
+  this.boo.fillColor = 'white';
 };
 
 LittleCanvas.prototype.mapValue = function (frameCount) {
@@ -223,14 +223,19 @@ LittleCanvas.prototype.mapValue = function (frameCount) {
   }
 };
 },{"./constrain":"/Users/karen/Documents/my_project/tweak/constrain.js","./map":"/Users/karen/Documents/my_project/tweak/map.js"}],"/Users/karen/Documents/my_project/tweak/editor.js":[function(require,module,exports){
-var CodeMirror = require('codemirror');
+module.exports = function () {
 
-var myCodeMirror = CodeMirror(document.getElementById('editor'), {
-		value: "type here",
-		mode: "javascript"
-});
+  var CodeMirror = require('codemirror');
 
-myCodeMirror.setOption("theme", "lesser-dark");
+  var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+    lineNumbers: true,
+    styleActiveLine: true,
+    matchBrackets: true
+  });
+
+  editor.setOption("theme", "lesser-dark");
+
+};
 },{"codemirror":"/Users/karen/Documents/my_project/tweak/node_modules/codemirror/lib/codemirror.js"}],"/Users/karen/Documents/my_project/tweak/map.js":[function(require,module,exports){
  module.exports = function (para, orMin, orMax, tarMin, tarMax) {
    var ratio = (para - orMin) / (orMax - orMin);

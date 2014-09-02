@@ -21,14 +21,14 @@ function LittleCanvas(beginPointX, beginPointY) {
   //making begin and end point
   this.beginP = new paper.Path.Circle(this.beginX, this.beginY, this.radius);
   this.endP = new paper.Path.Circle(this.endX, this.endY, this.radius);
-  this.beginP.strokeColor = 'black';
-  this.endP.strokeColor = 'black';
+  this.beginP.strokeColor = 'white';
+  this.endP.strokeColor = 'white';
 
   //making draw area
   this.drawArea = new paper.Path.Rectangle(beginPointX, beginPointY,
     this.width,
     this.height);
-  this.drawArea.strokeColor = 'black';
+  this.drawArea.strokeColor = 'white';
 
   //set hitOptions for edite
   this.hitOptions = {
@@ -183,7 +183,7 @@ LittleCanvas.prototype.setInput = function (property, start, end,
     this.boo = new paper.Path.Circle(this.beginX + this.width, this.beginY,
       this.radius);
   }
-  this.boo.fillColor = 'blue';
+  this.boo.fillColor = 'white';
 };
 
 LittleCanvas.prototype.mapValue = function (frameCount) {

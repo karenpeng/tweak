@@ -1,8 +1,13 @@
-var CodeMirror = require('codemirror');
+module.exports = function () {
 
-var myCodeMirror = CodeMirror(document.getElementById('editor'), {
-		value: "type here",
-		mode: "javascript"
-});
+  var CodeMirror = require('codemirror');
 
-myCodeMirror.setOption("theme", "lesser-dark");
+  var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+    lineNumbers: true,
+    styleActiveLine: true,
+    matchBrackets: true
+  });
+
+  editor.setOption("theme", "lesser-dark");
+
+};
