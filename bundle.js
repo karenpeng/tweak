@@ -15,15 +15,15 @@ function LittleCanvas(beginPointX, beginPointY) {
   this.height = 240;
   this.radius = 5;
   this.beginX = beginPointX + this.radius;
-  this.beginY = beginPointY + this.radius;
+  this.beginY = beginPointY + this.radius + 10;
   this.endX = beginPointX + this.width - this.radius;
-  this.endY = beginPointY + this.height - this.radius;
-  this.interval = 10;
+  this.endY = beginPointY + this.height - this.radius - 10;
   this.time = 0;
   this.isDrawingStart = false;
   this.isDrawingDone = false;
   this.path = new paper.Path();
-  //this.value = [];
+  this.interval = 20;
+  this.stop = 0;
 
   //making begin and end point
   this.beginP = new paper.Path.Circle(this.beginX, this.beginY, this.radius);
@@ -37,6 +37,14 @@ function LittleCanvas(beginPointX, beginPointY) {
     this.height);
   this.drawArea.strokeColor = 'black';
 
+  //set hitOptions for edite
+  this.hitOptions = {
+    segments: true,
+    stroke: true,
+    fill: false,
+    tolerance: 8
+  };
+
   //making interval x path
   this.verticalPaths = [];
   for (var i = this.beginX; i <= beginPointX + this.width; i += this.interval) {
@@ -45,20 +53,6 @@ function LittleCanvas(beginPointX, beginPointY) {
     //verticalPath.strokeColor = 'black';
     this.verticalPaths.push(verticalPath);
   }
-
-  //making moving ball
-  this.boo = new paper.Path.Circle(beginPointX + this.width + this.radius,
-    this.beginY,
-    this.radius);
-  this.boo.fillColor = 'blue';
-
-  //set hitOptions for edite
-  this.hitOptions = {
-    segments: true,
-    stroke: true,
-    fill: false,
-    tolerance: 5
-  };
 }
 
 LittleCanvas.prototype.onMouseDown = function (e) {
@@ -118,11 +112,8 @@ LittleCanvas.prototype.onMouseDrag = function (e) {
       }
     } else if (this.hitSegment) {
       var index = this.hitSegment.index;
-      //console.log(this)
-      //console.log(this.hitSegment, index)
       this.hitSegment.point.y += e.delta.y;
       this.hitSegment.point.x += e.delta.x;
-      // console.log(this.path.segments[index + 1]);
       this.hitSegment.point.x = constrain(this.hitSegment.point.x, this.path.segments[
           index - 1].point.x + 0.0000001, this.path.segments[index + 1]
         .point.x -
@@ -133,15 +124,12 @@ LittleCanvas.prototype.onMouseDrag = function (e) {
 };
 
 LittleCanvas.prototype.onMouseUp = function (e) {
-  if (isDrawingMode) {
-    if (this.isDrawingStart) {
+  if (this.isDrawingStart) {
+    if (isDrawingMode) {
       if (!this.endP.bounds.contains(e.point)) {
-        //console.log(this.path instanceof paper.Path)
         this.path.add(new paper.Point(this.endX, this.endY));
       }
       this.endP.fillColor = 'yellow';
-      this.path.smooth();
-      this.path.simplify();
       this.path.firstSegment.point.x = this.beginX;
       this.path.firstSegment.point.y = this.beginY;
       this.path.lastSegment.point.x = this.endX;
@@ -149,6 +137,16 @@ LittleCanvas.prototype.onMouseUp = function (e) {
       this.isDrawingDone = true;
       this.isDrawingStart = false;
     }
+  }
+  if (this.path) {
+    this.path.smooth();
+    for (var i = 0; i < this.path.segments.length - 1; i++) {
+      if (this.path.segments[i].point.x >= this.path.segments[i + 1].point.x) {
+        this.path.removeSegment(i + 1);
+        console.log("delete the " + i + 1 + "th segments");
+      }
+    }
+    this.path.simplify();
   }
 };
 
@@ -159,21 +157,81 @@ LittleCanvas.prototype.getValue = function () {
     var intersections = that.path.getIntersections(pa);
     intersections.forEach(function (intersection) {
       that.value.push([intersection.point.x, intersection.point.y]);
-      //console.log(that)
     });
   });
-  //console.log(this.value !== []);
 };
 
-LittleCanvas.prototype.mapValue = function () {
-  //console.log(this.value)
-  this.boo.position.y = this.value[this.time][1];
-  // this.boo.fillColor.hue = map(this.boo.position.y, this.beginY, this.endY, 240,
-  //   60);
-  this.time++;
-  if (this.time >= this.value.length) this.time = 0;
+LittleCanvas.prototype.setInput = function (property, start, end,
+  totalSeconds) {
+  this.property = property;
+  this.block = Math.floor(60 / this.verticalPaths.length * totalSeconds);
+  if (this.boo) {
+    this.boo.remove();
+  }
+  switch (this.property) {
+  case 'y':
+    //making moving ball
+    this.boo = new paper.Path.Circle(this.beginX + this.width, this.beginY,
+      this.radius);
+    this.start = start + this.beginY;
+    this.end = end + this.beginY;
+    break;
+  case 'x':
+    this.boo = new paper.Path.Circle(this.beginX + this.width, (this.endY -
+      this.beginY) / 2, this.radius);
+    this.start = start + this.width + this.beginX;
+    this.end = end + this.width + this.beginX;
+    break;
+  case 'size':
+    this.boo = new paper.Path.Circle(this.beginX + this.width, (this.endY -
+      this.beginY) / 2, this.radius);
+    break;
+  default:
+    this.boo = new paper.Path.Circle(this.beginX + this.width, this.beginY,
+      this.radius);
+  }
+  this.boo.fillColor = 'blue';
 };
-},{"./constrain":"/Users/karen/Documents/my_project/tweak/constrain.js","./map":"/Users/karen/Documents/my_project/tweak/map.js"}],"/Users/karen/Documents/my_project/tweak/map.js":[function(require,module,exports){
+
+LittleCanvas.prototype.mapValue = function (frameCount) {
+  if (frameCount % this.block === 0 && this.value.length !== 0) {
+    switch (this.property) {
+    case 'y':
+      this.boo.position.y = map(this.value[this.time][1], this.beginY, this.endY,
+        this.start, this.end);
+      break;
+    case 'x':
+      this.boo.position.x = map(this.value[this.time][1], this.beginY, this.endY,
+        this.start, this.end);
+      break;
+    case 'size':
+      this.boo.bounds.width = this.value[this.time][1] / 2;
+      this.boo.bounds.height = this.value[this.time][1] / 2;
+      break;
+    default:
+      //do nothing;
+    }
+    if (this.time < this.value.length - 1) {
+      this.time++;
+    } else {
+      this.stop++;
+      if (this.stop > 10) {
+        this.time = 0;
+        this.stop = 0;
+      }
+    }
+  }
+};
+},{"./constrain":"/Users/karen/Documents/my_project/tweak/constrain.js","./map":"/Users/karen/Documents/my_project/tweak/map.js"}],"/Users/karen/Documents/my_project/tweak/editor.js":[function(require,module,exports){
+var CodeMirror = require('codemirror');
+
+var myCodeMirror = CodeMirror(document.getElementById('editor'), {
+		value: "type here",
+		mode: "javascript"
+});
+
+myCodeMirror.setOption("theme", "lesser-dark");
+},{"codemirror":"/Users/karen/Documents/my_project/tweak/node_modules/codemirror/lib/codemirror.js"}],"/Users/karen/Documents/my_project/tweak/map.js":[function(require,module,exports){
  module.exports = function (para, orMin, orMax, tarMin, tarMax) {
    var ratio = (para - orMin) / (orMax - orMin);
    var tarValue = ratio * (tarMax - tarMin) + tarMin;
@@ -8016,20 +8074,17 @@ LittleCanvas.prototype.mapValue = function () {
 paper.setup(myCanvas);
 
 var LittleCanvas = require('./drawCanvas');
+var editor = require('./editor');
 var littleCanvases = [];
-var CodeMirror = require('codemirror');
-
-// var myCodeMirror = CodeMirror(document.body, {
-//   value: "function myScript(){return 100;}\n",
-//   mode: "javascript"
-// });
 
 window.onload = function () {
 
   for (var itr = 0; itr < 3; itr++) {
-    littleCanvases[itr] = new LittleCanvas(itr * 340 + 20, 40);
+    littleCanvases[itr] = new LittleCanvas(itr * 420 + 20, 40);
   }
   var tool = new paper.Tool();
+  tool.minDistance = 10;
+  tool.maxDistance = 60;
   var frameCount = 0;
 
   tool.onMouseDown = function (e) {
@@ -8047,9 +8102,9 @@ window.onload = function () {
   tool.onMouseUp = function (e) {
     littleCanvases.forEach(function (c) {
       c.onMouseUp(e);
-      if (isDrawingMode) {
-        c.time = 0;
-      }
+      c.setInput('y', 10, 210, 2);
+      c.time = 0;
+      c.getValue();
     });
   };
 
@@ -8064,18 +8119,15 @@ window.onload = function () {
 
   paper.view.onFrame = function (e) {
     frameCount++;
-    if (frameCount % 6 === 0) {
-      littleCanvases.forEach(function (c) {
-        if (isDrawingMode) {
-          if (c.isDrawingDone) {
-            c.getValue();
-            c.mapValue();
-          }
-        } else {
-          c.time = 0;
+    littleCanvases.forEach(function (c) {
+      if (isDrawingMode) {
+        if (c.isDrawingDone) {
+          c.mapValue(frameCount);
         }
-      });
-    }
+      } else {
+        c.time = 0;
+      }
+    });
   };
 };
-},{"./drawCanvas":"/Users/karen/Documents/my_project/tweak/drawCanvas.js","codemirror":"/Users/karen/Documents/my_project/tweak/node_modules/codemirror/lib/codemirror.js"}]},{},["/Users/karen/Documents/my_project/tweak/test.js"]);
+},{"./drawCanvas":"/Users/karen/Documents/my_project/tweak/drawCanvas.js","./editor":"/Users/karen/Documents/my_project/tweak/editor.js"}]},{},["/Users/karen/Documents/my_project/tweak/test.js"]);

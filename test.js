@@ -1,20 +1,17 @@
 paper.setup(myCanvas);
 
 var LittleCanvas = require('./drawCanvas');
+var editor = require('./editor');
 var littleCanvases = [];
-var CodeMirror = require('codemirror');
-
-// var myCodeMirror = CodeMirror(document.body, {
-//   value: "function myScript(){return 100;}\n",
-//   mode: "javascript"
-// });
 
 window.onload = function () {
 
   for (var itr = 0; itr < 3; itr++) {
-    littleCanvases[itr] = new LittleCanvas(itr * 340 + 20, 40);
+    littleCanvases[itr] = new LittleCanvas(itr * 420 + 20, 40);
   }
   var tool = new paper.Tool();
+  tool.minDistance = 10;
+  tool.maxDistance = 60;
   var frameCount = 0;
 
   tool.onMouseDown = function (e) {
@@ -32,9 +29,9 @@ window.onload = function () {
   tool.onMouseUp = function (e) {
     littleCanvases.forEach(function (c) {
       c.onMouseUp(e);
-      if (isDrawingMode) {
-        c.time = 0;
-      }
+      c.setInput('y', 10, 210, 2);
+      c.time = 0;
+      c.getValue();
     });
   };
 
@@ -49,17 +46,14 @@ window.onload = function () {
 
   paper.view.onFrame = function (e) {
     frameCount++;
-    if (frameCount % 6 === 0) {
-      littleCanvases.forEach(function (c) {
-        if (isDrawingMode) {
-          if (c.isDrawingDone) {
-            c.getValue();
-            c.mapValue();
-          }
-        } else {
-          c.time = 0;
+    littleCanvases.forEach(function (c) {
+      if (isDrawingMode) {
+        if (c.isDrawingDone) {
+          c.mapValue(frameCount);
         }
-      });
-    }
+      } else {
+        c.time = 0;
+      }
+    });
   };
 };
