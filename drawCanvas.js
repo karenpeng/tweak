@@ -1,7 +1,8 @@
 module.exports = LittleCanvas;
 
-var map = require('./map');
-var constrain = require('./constrain');
+var mMath = require('./math');
+var math = new mMath();
+var PVector = require('./pvector');
 
 function LittleCanvas(beginPointX, beginPointY) {
   this.width = 320;
@@ -15,8 +16,10 @@ function LittleCanvas(beginPointX, beginPointY) {
   this.isDrawingStart = false;
   this.isDrawingDone = false;
   this.path = new paper.Path();
-  this.interval = 20;
+  this.interval = 5;
   this.stop = 0;
+  this.texts = [];
+  this.textNum = 0;
 
   //making begin and end point
   this.beginP = new paper.Path.Circle(this.beginX, this.beginY, this.radius);
@@ -30,12 +33,23 @@ function LittleCanvas(beginPointX, beginPointY) {
     this.height);
   this.drawArea.strokeColor = 'white';
 
+  //group items
+  this.boundGroup = new paper.Group();
+  this.pathGroup = new paper.Group();
+  this.textGroup = new paper.Group();
+
+  this.pathGroup.addChild(this.path);
+
+  this.boundGroup.addChild(this.drawArea);
+  this.boundGroup.addChild(this.beginP);
+  this.boundGroup.addChild(this.endP);
+
   //set hitOptions for edite
   this.hitOptions = {
     segments: true,
     stroke: true,
     fill: false,
-    tolerance: 8
+    tolerance: 10
   };
 
   //making interval x path
@@ -100,6 +114,7 @@ LittleCanvas.prototype.onMouseDrag = function (e) {
         }
       });
       this.path.add(e.point);
+
       if (this.endP.bounds.contains(e.point)) {
         this.endP.fillColor = "yellow";
       }
@@ -107,11 +122,11 @@ LittleCanvas.prototype.onMouseDrag = function (e) {
       var index = this.hitSegment.index;
       this.hitSegment.point.y += e.delta.y;
       this.hitSegment.point.x += e.delta.x;
-      this.hitSegment.point.x = constrain(this.hitSegment.point.x, this.path.segments[
+      this.hitSegment.point.x = math.constrain(this.hitSegment.point.x, this.path
+        .segments[
           index - 1].point.x + 0.0000001, this.path.segments[index + 1]
         .point.x -
         0.0000001);
-      this.path.smooth();
     }
   }
 };
@@ -133,13 +148,59 @@ LittleCanvas.prototype.onMouseUp = function (e) {
   }
   if (this.path) {
     this.path.smooth();
+    this.path.simplify();
     for (var i = 0; i < this.path.segments.length - 1; i++) {
-      if (this.path.segments[i].point.x >= this.path.segments[i + 1].point.x) {
+      var p = this.path.segments[i].point;
+      var pNxt = this.path.segments[i + 1].point;
+      if (p.x >= pNxt.x) {
         this.path.removeSegment(i + 1);
-        console.log("delete the " + i + 1 + "th segments");
+        //console.log("delete the " + i + 1 + "th segment");
+      } else {
+        var hdlOut = this.path.segments[i].handleOut;
+        //
+        //actually this is a function called angleBetween in processing
+        var hdlOutVctr = new PVector((hdlOut.x - p.x), (hdlOut.y - p.y));
+        var pointsVctr = new PVector(pNxt.x - p.x, pNxt.y - p.y);
+        var hdlOutDis = hdlOutVctr.mag();
+        var pointsDis = pointsVctr.mag();
+        var theta = Math.acos(hdlOutVctr.dot(pointsVctr) /
+          (hdlOutDis * pointsDis));
+        console.log("point " + i + " with a theta value of " + theta);
+        //
+
+        if (theta > 3) {
+          //actually this is a function called rotate in processing
+          var dTheta = theta - Math.PI / 2;
+          // var x = Math.cos(dTheta) * hdlOutDis;
+          // var y = Math.sin(dTheta) * hdlOutDis;
+          //console.log(i + "th point has a weird handleOut")
+          /*
+          hdlOutVctr.rotate(dTheta);
+          var x = hdlOutVctr.x + p.x;
+          var y = hdlOutVctr.y + p.y;
+          hdlOut.x = x;
+          hdlOut.y = y;
+          console.log("modify" + i + "th handleOut point location");
+          */
+        }
+
+        var hdlInNex = this.path.segments[i + 1].handleIn;
       }
     }
-    this.path.simplify();
+
+    var that = this;
+    this.path.segments.forEach(function (s) {
+      var t = new paper.PointText({
+        point: s.point,
+        fillColor: 'white',
+        fontSize: 10,
+        content: that.textNum,
+      });
+      that.texts.push(t);
+      that.textNum++;
+      that.textGroup.addChild(t);
+    });
+
   }
 };
 
@@ -152,6 +213,7 @@ LittleCanvas.prototype.getValue = function () {
       that.value.push([intersection.point.x, intersection.point.y]);
     });
   });
+  //console.log("return location data amount of " + this.value.length);
 };
 
 LittleCanvas.prototype.setInput = function (property, start, end,
@@ -190,11 +252,13 @@ LittleCanvas.prototype.mapValue = function (frameCount) {
   if (frameCount % this.block === 0 && this.value.length !== 0) {
     switch (this.property) {
     case 'y':
-      this.boo.position.y = map(this.value[this.time][1], this.beginY, this.endY,
+      this.boo.position.y = math.map(this.value[this.time][1], this.beginY,
+        this.endY,
         this.start, this.end);
       break;
     case 'x':
-      this.boo.position.x = map(this.value[this.time][1], this.beginY, this.endY,
+      this.boo.position.x = math.map(this.value[this.time][1], this.beginY,
+        this.endY,
         this.start, this.end);
       break;
     case 'size':
@@ -208,7 +272,7 @@ LittleCanvas.prototype.mapValue = function (frameCount) {
       this.time++;
     } else {
       this.stop++;
-      if (this.stop > 10) {
+      if (this.stop > 30) {
         this.time = 0;
         this.stop = 0;
       }

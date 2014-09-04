@@ -1,14 +1,9 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/karen/Documents/my_project/tweak/constrain.js":[function(require,module,exports){
-module.exports = function (item, min, max) {
-  if (item < min) return min;
-  else if (item > max) return max;
-  else return item;
-};
-},{}],"/Users/karen/Documents/my_project/tweak/drawCanvas.js":[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/Users/karen/Documents/my_project/tweak/drawCanvas.js":[function(require,module,exports){
 module.exports = LittleCanvas;
 
-var map = require('./map');
-var constrain = require('./constrain');
+var mMath = require('./math');
+var math = new mMath();
+var PVector = require('./pvector');
 
 function LittleCanvas(beginPointX, beginPointY) {
   this.width = 320;
@@ -22,8 +17,10 @@ function LittleCanvas(beginPointX, beginPointY) {
   this.isDrawingStart = false;
   this.isDrawingDone = false;
   this.path = new paper.Path();
-  this.interval = 20;
+  this.interval = 5;
   this.stop = 0;
+  this.texts = [];
+  this.textNum = 0;
 
   //making begin and end point
   this.beginP = new paper.Path.Circle(this.beginX, this.beginY, this.radius);
@@ -37,12 +34,23 @@ function LittleCanvas(beginPointX, beginPointY) {
     this.height);
   this.drawArea.strokeColor = 'white';
 
+  //group items
+  this.boundGroup = new paper.Group();
+  this.pathGroup = new paper.Group();
+  this.textGroup = new paper.Group();
+
+  this.pathGroup.addChild(this.path);
+
+  this.boundGroup.addChild(this.drawArea);
+  this.boundGroup.addChild(this.beginP);
+  this.boundGroup.addChild(this.endP);
+
   //set hitOptions for edite
   this.hitOptions = {
     segments: true,
     stroke: true,
     fill: false,
-    tolerance: 8
+    tolerance: 10
   };
 
   //making interval x path
@@ -107,6 +115,7 @@ LittleCanvas.prototype.onMouseDrag = function (e) {
         }
       });
       this.path.add(e.point);
+
       if (this.endP.bounds.contains(e.point)) {
         this.endP.fillColor = "yellow";
       }
@@ -114,11 +123,11 @@ LittleCanvas.prototype.onMouseDrag = function (e) {
       var index = this.hitSegment.index;
       this.hitSegment.point.y += e.delta.y;
       this.hitSegment.point.x += e.delta.x;
-      this.hitSegment.point.x = constrain(this.hitSegment.point.x, this.path.segments[
+      this.hitSegment.point.x = math.constrain(this.hitSegment.point.x, this.path
+        .segments[
           index - 1].point.x + 0.0000001, this.path.segments[index + 1]
         .point.x -
         0.0000001);
-      this.path.smooth();
     }
   }
 };
@@ -140,13 +149,59 @@ LittleCanvas.prototype.onMouseUp = function (e) {
   }
   if (this.path) {
     this.path.smooth();
+    this.path.simplify();
     for (var i = 0; i < this.path.segments.length - 1; i++) {
-      if (this.path.segments[i].point.x >= this.path.segments[i + 1].point.x) {
+      var p = this.path.segments[i].point;
+      var pNxt = this.path.segments[i + 1].point;
+      if (p.x >= pNxt.x) {
         this.path.removeSegment(i + 1);
-        console.log("delete the " + i + 1 + "th segments");
+        //console.log("delete the " + i + 1 + "th segment");
+      } else {
+        var hdlOut = this.path.segments[i].handleOut;
+        //
+        //actually this is a function called angleBetween in processing
+        var hdlOutVctr = new PVector((hdlOut.x - p.x), (hdlOut.y - p.y));
+        var pointsVctr = new PVector(pNxt.x - p.x, pNxt.y - p.y);
+        var hdlOutDis = hdlOutVctr.mag();
+        var pointsDis = pointsVctr.mag();
+        var theta = Math.acos(hdlOutVctr.dot(pointsVctr) /
+          (hdlOutDis * pointsDis));
+        console.log("point " + i + " with a theta value of " + theta);
+        //
+
+        if (theta > 3) {
+          //actually this is a function called rotate in processing
+          var dTheta = theta - Math.PI / 2;
+          // var x = Math.cos(dTheta) * hdlOutDis;
+          // var y = Math.sin(dTheta) * hdlOutDis;
+          //console.log(i + "th point has a weird handleOut")
+          /*
+          hdlOutVctr.rotate(dTheta);
+          var x = hdlOutVctr.x + p.x;
+          var y = hdlOutVctr.y + p.y;
+          hdlOut.x = x;
+          hdlOut.y = y;
+          console.log("modify" + i + "th handleOut point location");
+          */
+        }
+
+        var hdlInNex = this.path.segments[i + 1].handleIn;
       }
     }
-    this.path.simplify();
+
+    var that = this;
+    this.path.segments.forEach(function (s) {
+      var t = new paper.PointText({
+        point: s.point,
+        fillColor: 'white',
+        fontSize: 10,
+        content: that.textNum,
+      });
+      that.texts.push(t);
+      that.textNum++;
+      that.textGroup.addChild(t);
+    });
+
   }
 };
 
@@ -159,6 +214,7 @@ LittleCanvas.prototype.getValue = function () {
       that.value.push([intersection.point.x, intersection.point.y]);
     });
   });
+  //console.log("return location data amount of " + this.value.length);
 };
 
 LittleCanvas.prototype.setInput = function (property, start, end,
@@ -197,11 +253,13 @@ LittleCanvas.prototype.mapValue = function (frameCount) {
   if (frameCount % this.block === 0 && this.value.length !== 0) {
     switch (this.property) {
     case 'y':
-      this.boo.position.y = map(this.value[this.time][1], this.beginY, this.endY,
+      this.boo.position.y = math.map(this.value[this.time][1], this.beginY,
+        this.endY,
         this.start, this.end);
       break;
     case 'x':
-      this.boo.position.x = map(this.value[this.time][1], this.beginY, this.endY,
+      this.boo.position.x = math.map(this.value[this.time][1], this.beginY,
+        this.endY,
         this.start, this.end);
       break;
     case 'size':
@@ -215,14 +273,14 @@ LittleCanvas.prototype.mapValue = function (frameCount) {
       this.time++;
     } else {
       this.stop++;
-      if (this.stop > 10) {
+      if (this.stop > 30) {
         this.time = 0;
         this.stop = 0;
       }
     }
   }
 };
-},{"./constrain":"/Users/karen/Documents/my_project/tweak/constrain.js","./map":"/Users/karen/Documents/my_project/tweak/map.js"}],"/Users/karen/Documents/my_project/tweak/editor.js":[function(require,module,exports){
+},{"./math":"/Users/karen/Documents/my_project/tweak/math.js","./pvector":"/Users/karen/Documents/my_project/tweak/pvector.js"}],"/Users/karen/Documents/my_project/tweak/editor.js":[function(require,module,exports){
 module.exports = function () {
 
   var CodeMirror = require('codemirror');
@@ -236,12 +294,36 @@ module.exports = function () {
   editor.setOption("theme", "lesser-dark");
 
 };
-},{"codemirror":"/Users/karen/Documents/my_project/tweak/node_modules/codemirror/lib/codemirror.js"}],"/Users/karen/Documents/my_project/tweak/map.js":[function(require,module,exports){
- module.exports = function (para, orMin, orMax, tarMin, tarMax) {
-   var ratio = (para - orMin) / (orMax - orMin);
-   var tarValue = ratio * (tarMax - tarMin) + tarMin;
-   return tarValue;
- };
+},{"codemirror":"/Users/karen/Documents/my_project/tweak/node_modules/codemirror/lib/codemirror.js"}],"/Users/karen/Documents/my_project/tweak/math.js":[function(require,module,exports){
+module.exports = math;
+
+function math() {
+
+}
+
+math.prototype.map = function (para, orMin, orMax, tarMin, tarMax) {
+  var ratio = (para - orMin) / (orMax - orMin);
+  var tarValue = ratio * (tarMax - tarMin) + tarMin;
+  return tarValue;
+};
+
+math.prototype.constrain = function (item, min, max) {
+  if (item < min) return min;
+  else if (item > max) return max;
+  else return item;
+};
+
+math.prototype.dist = function (point1X, point1Y, point2X, point2Y) {
+  var dX = point1X - point2X;
+  var dY = point1Y - point2Y;
+  var dis = Math.sqrt((Math.pow(dX, 2) + Math.pow(dY, 2)));
+  return dis;
+};
+
+math.prototype.lerp = function (start, stop, amt) {
+  var value = (stop - start) * amt + start;
+  return value;
+};
 },{}],"/Users/karen/Documents/my_project/tweak/node_modules/codemirror/lib/codemirror.js":[function(require,module,exports){
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
@@ -8075,6 +8157,171 @@ module.exports = function () {
   return CodeMirror;
 });
 
+},{}],"/Users/karen/Documents/my_project/tweak/pvector.js":[function(require,module,exports){
+module.exports = PVector;
+
+function PVector(x, y) {
+  if (!(this instanceof PVector)) {
+    return new PVector(x, y);
+  }
+
+  this.x = x || 0;
+  this.y = y || 0;
+  return this;
+};
+
+PVector.fromAngle = function (angle) {
+  return new PVector(Math.cos(angle), Math.sin(angle));
+};
+
+PVector.prototype.set = function (x, y) {
+  this.x = x || 0;
+  this.y = y || 0;
+};
+
+PVector.prototype.add = function (other) {
+  this.x += other.x;
+  this.y += other.y;
+  return this;
+};
+
+PVector.add = function (one, other) {
+  return new PVector(one.x + other.x, one.y + other.y);
+};
+
+PVector.prototype.sub = function (other) {
+  this.x -= other.x;
+  this.y -= other.y;
+  return this;
+};
+
+PVector.sub = function (one, other) {
+  return new PVector(one.x - other.x, one.y - other.y);
+};
+
+PVector.prototype.div = function (n) {
+  this.x /= n;
+  this.y /= n;
+  return this;
+};
+
+PVector.div = function (vector, n, target) {
+  if (target instanceof PVector) {
+    target.x = vector.x / n;
+    target.y = vector.y / n;
+    return target;
+  }
+  return new PVector(vector.x / n, vector.y / n);
+};
+
+PVector.prototype.mult = function (rate) {
+  this.x *= rate;
+  this.y *= rate;
+  return this;
+};
+
+PVector.mult = function (vector, n, target) {
+  if (target instanceof PVector) {
+    target.x = vector.x * n;
+    target.y = vector.y * n;
+    return target;
+  }
+  return new PVector(vector.x * n, vector.y * n);
+};
+
+PVector.prototype.dot = function (p) {
+  return this.x * p.x + this.y * p.y;
+};
+
+PVector.dot = function (a, b) {
+  return a.x * b.x + a.y * b.y;
+};
+
+PVector.prototype.mag = function () {
+  return Math.sqrt(Math.pow(this.x, 2) + Math.pow(this.y, 2));
+};
+
+PVector.dist = function (loc1, loc2) {
+  return Math.sqrt(Math.pow(loc1.x - loc2.x, 2) + Math.pow(loc1.y - loc2.y,
+    2));
+};
+
+PVector.prototype.normalize = function () {
+  var mag = this.mag();
+  if (mag === 0) {
+    this.x = 0;
+    this.y = 0;
+  } else {
+    this.x /= mag;
+    this.y /= mag;
+  }
+  return this;
+};
+
+PVector.prototype.limit = function (limit) {
+  if (this.mag() <= limit) {
+    return this;
+  }
+  this.normalize();
+  this.x *= limit;
+  this.y *= limit;
+  return this;
+};
+
+PVector.prototype.setMag = function (mag) {
+  this.normalize();
+  this.x *= mag;
+  this.y *= mag;
+  return this;
+};
+
+PVector.prototype.clone = function () {
+  return new PVector(this.x, this.y);
+};
+
+PVector.random2D = function (vector) {
+  var num = utils.random(2 * Math.PI);
+  var x = Math.sin(num);
+  var y = Math.cos(num);
+  if (!vector) {
+    return new PVector(x, y);
+  }
+  vector.x = x;
+  vector.y = y;
+  return vector;
+};
+
+PVector.prototype.heading = function () {
+  if (this.x === 0) {
+    return this.y > 0 ? Math.PI / 2 : Math.PI / -2;
+  }
+  var theta = Math.atan(this.y / this.x);
+  if (this.x > 0) {
+    return theta;
+  } else {
+    return Math.PI + theta;
+  }
+  return Math.atan(this.y / this.x);
+};
+
+PVector.prototype.rotate = function (a) {
+  var newHeading = this.heading() + a;
+  var mag = this.mag();
+  this.x = Math.cos(newHeading) * mag;
+  this.y = Math.sin(newHeading) * mag;
+  return this;
+};
+
+PVector.angleBetween = function (a, b) {
+  // A dot B = (magnitude of A)*(magnitude of B)*cos(theta)
+  var dot = a.dot(b);
+  return Math.acos(dot / (a.mag() * b.mag()));
+};
+
+PVector.prototype.angleBetween = function (other) {
+  var dot = this.dot(other);
+  return Math.acos(dot / (this.mag() * other.mag()));
+};
 },{}],"/Users/karen/Documents/my_project/tweak/test.js":[function(require,module,exports){
 paper.setup(myCanvas);
 
@@ -8117,7 +8364,14 @@ window.onload = function () {
     if (!isDrawingMode) {
       paper.project.activeLayer.selected = false;
       if (e.item) {
-        e.item.selected = true;
+        //e.item.fullySelected = true;
+        littleCanvases.forEach(function (c) {
+          if (e.item === c.pathGroup) {
+            e.item.children.forEach(function (p) {
+              p.fullySelected = true;
+            });
+          }
+        });
       }
     }
   };

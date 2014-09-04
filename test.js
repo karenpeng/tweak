@@ -39,7 +39,14 @@ window.onload = function () {
     if (!isDrawingMode) {
       paper.project.activeLayer.selected = false;
       if (e.item) {
-        e.item.selected = true;
+        //e.item.fullySelected = true;
+        littleCanvases.forEach(function (c) {
+          if (e.item === c.pathGroup) {
+            e.item.children.forEach(function (p) {
+              p.fullySelected = true;
+            });
+          }
+        });
       }
     }
   };
