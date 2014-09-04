@@ -49,7 +49,7 @@ function LittleCanvas(beginPointX, beginPointY) {
     segments: true,
     stroke: true,
     fill: false,
-    tolerance: 10
+    tolerance: 5
   };
 
   //making interval x path
@@ -90,10 +90,10 @@ LittleCanvas.prototype.onMouseDown = function (e) {
         }
         return;
       }
-      if (hitResult) {
+      //only modify points on the path
+      if (hitResult.item.parent === this.pathGroup) {
         if (hitResult.type === 'segment') {
           this.hitSegment = hitResult.segment;
-          //console.log(this.hitSegment)
         } else if (hitResult.type === 'stroke') {
           var location = hitResult.location;
           this.hitSegment = this.path.insert(location.index + 1, e.point);
@@ -145,62 +145,73 @@ LittleCanvas.prototype.onMouseUp = function (e) {
       this.isDrawingDone = true;
       this.isDrawingStart = false;
     }
-  }
-  if (this.path) {
-    this.path.smooth();
-    this.path.simplify();
-    for (var i = 0; i < this.path.segments.length - 1; i++) {
-      var p = this.path.segments[i].point;
-      var pNxt = this.path.segments[i + 1].point;
-      if (p.x >= pNxt.x) {
-        this.path.removeSegment(i + 1);
-        //console.log("delete the " + i + 1 + "th segment");
-      } else {
-        var hdlOut = this.path.segments[i].handleOut;
-        //
-        //actually this is a function called angleBetween in processing
-        var hdlOutVctr = new PVector((hdlOut.x - p.x), (hdlOut.y - p.y));
-        var pointsVctr = new PVector(pNxt.x - p.x, pNxt.y - p.y);
-        var hdlOutDis = hdlOutVctr.mag();
-        var pointsDis = pointsVctr.mag();
-        var theta = Math.acos(hdlOutVctr.dot(pointsVctr) /
-          (hdlOutDis * pointsDis));
-        console.log("point " + i + " with a theta value of " + theta);
-        //
+    //}
+    if (this.path) {
+      this.path.smooth();
+      this.path.simplify();
+      for (var i = 0; i < this.path.segments.length - 1; i++) {
+        var p = this.path.segments[i].point;
+        var pNxt = this.path.segments[i + 1].point;
+        if (p.x >= pNxt.x) {
+          this.path.removeSegment(i + 1);
+          console.log("delete the " + i + "th segment");
+        } else {
+          var hdlOut = this.path.segments[i].handleOut;
+          //TODO:need to store the first value pf hdlOut.x and gdlOut.y
 
-        if (theta > 3) {
-          //actually this is a function called rotate in processing
-          var dTheta = theta - Math.PI / 2;
-          // var x = Math.cos(dTheta) * hdlOutDis;
-          // var y = Math.sin(dTheta) * hdlOutDis;
-          //console.log(i + "th point has a weird handleOut")
-          /*
-          hdlOutVctr.rotate(dTheta);
-          var x = hdlOutVctr.x + p.x;
-          var y = hdlOutVctr.y + p.y;
-          hdlOut.x = x;
-          hdlOut.y = y;
-          console.log("modify" + i + "th handleOut point location");
-          */
+          //
+          //actually this is a function called angleBetween in processing
+          var hdlOutVctr = new PVector((hdlOut.x - p.x), (hdlOut.y - p.y));
+          var pointsVctr = new PVector(pNxt.x - p.x, pNxt.y - p.y);
+          var hdlOutDis = hdlOutVctr.mag();
+          var pointsDis = pointsVctr.mag();
+          var thetaOut = Math.acos(hdlOutVctr.dot(pointsVctr) /
+            (hdlOutDis * pointsDis));
+          //
+          console.log("point " + i + " has a handleOut angle value of " +
+            thetaOut + ", a handleOut dist of " + hdlOutDis);
+
+          while (thetaOut > 1 && hdlOutDis > 200) {
+            console.log("modifying" + i + "th point's handleOut");
+            hdlOut.x = math.lerp(orgHdlOut[0], p.x, 0.0001);
+            hdlOut.y = math.lerp(orgHdlOut[1], p.y, 0.0001);
+          }
+
+          var hdlIn = this.path.segments[i + 1].handleIn;
+          //
+          //actually this is a function called angleBetween in processing
+          var hdlInVctr = new PVector((hdlIn.x - p.x), (hdlIn.y - p.y));
+          var pointsVctrReverse = new PVector(p.x - pNxt.x, p.y - pNxt.y);
+          var hdlInDis = hdlInVctr.mag();
+          var pointsReverseDis = pointsVctrReverse.mag();
+          var thetaIn = Math.acos(hdlInVctr.dot(pointsVctrReverse) /
+            (hdlInDis * pointsReverseDis));
+          while (thetaIn > 1 && hdlInDis > 200) {
+            console.log("modifying" + (i + 1) + "th point's handleIn");
+            hdlIn.x = math.lerp(hdlIn.x, p.x, 0.0001);
+            hdlIn.y = math.lerp(hdlIn.y, p.y, 0.0001);
+          }
+
+          console.log("point " + i + " has a handleIn angle value of " +
+            thetaIn + ", a handleIn dist of " + hdlInDis);
         }
-
-        var hdlInNex = this.path.segments[i + 1].handleIn;
       }
-    }
+      this.path.smooth();
+      this.path.simplify();
 
-    var that = this;
-    this.path.segments.forEach(function (s) {
-      var t = new paper.PointText({
-        point: s.point,
-        fillColor: 'white',
-        fontSize: 10,
-        content: that.textNum,
+      var that = this;
+      this.path.segments.forEach(function (s) {
+        var t = new paper.PointText({
+          point: s.point,
+          fillColor: 'white',
+          fontSize: 10,
+          content: that.textNum,
+        });
+        that.texts.push(t);
+        that.textNum++;
+        that.textGroup.addChild(t);
       });
-      that.texts.push(t);
-      that.textNum++;
-      that.textGroup.addChild(t);
-    });
-
+    }
   }
 };
 
