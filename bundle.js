@@ -169,6 +169,7 @@ LittleCanvas.prototype.onMouseUp = function (e) {
           if (this.anotherTimer[i] === 0) {
             hdlOutOri.push(hdlOut.x);
             hdlOutOri.push(hdlOut.y);
+            console.log("a")
             this.anotherTimer[i]++;
           }
           //
@@ -199,20 +200,19 @@ LittleCanvas.prototype.onMouseUp = function (e) {
           var pointsReverseDis = pointsVctrReverse.mag();
           var thetaIn = Math.acos(hdlInVctr.dot(pointsVctrReverse) /
             (hdlInDis * pointsReverseDis));
+          /*
           while (thetaIn > 1 && hdlInDis > 200) {
             console.log("modifying" + (i + 1) + "th point's handleIn");
             hdlIn.x = math.lerp(hdlIn.x, p.x, 0.0001);
             hdlIn.y = math.lerp(hdlIn.y, p.y, 0.0001);
           }
-
+*/
           console.log("point " + i + " has a handleIn angle value of " +
             thetaIn + ", a handleIn dist of " + hdlInDis);
         }
       }
       this.path.smooth();
       this.path.simplify();
-
-      var that = this;
       this.path.segments.forEach(function (s) {
         var t = new paper.PointText({
           point: s.point,
