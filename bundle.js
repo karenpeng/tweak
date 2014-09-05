@@ -21,6 +21,7 @@ function LittleCanvas(beginPointX, beginPointY) {
   this.stop = 0;
   this.texts = [];
   this.textNum = 0;
+  this.anotherTimer = [];
 
   //making begin and end point
   this.beginP = new paper.Path.Circle(this.beginX, this.beginY, this.radius);
@@ -133,6 +134,7 @@ LittleCanvas.prototype.onMouseDrag = function (e) {
 };
 
 LittleCanvas.prototype.onMouseUp = function (e) {
+  this.anotherTimer = 0;
   if (this.isDrawingStart) {
     if (isDrawingMode) {
       if (!this.endP.bounds.contains(e.point)) {
@@ -150,6 +152,11 @@ LittleCanvas.prototype.onMouseUp = function (e) {
     if (this.path) {
       this.path.smooth();
       this.path.simplify();
+      var hdlOutOri = [];
+      var that = this;
+      this.path.segments.forEach(function (s, index) {
+        that.anotherTimer[index] = 0;
+      });
       for (var i = 0; i < this.path.segments.length - 1; i++) {
         var p = this.path.segments[i].point;
         var pNxt = this.path.segments[i + 1].point;
@@ -159,7 +166,11 @@ LittleCanvas.prototype.onMouseUp = function (e) {
         } else {
           var hdlOut = this.path.segments[i].handleOut;
           //TODO:need to store the first value pf hdlOut.x and gdlOut.y
-
+          if (this.anotherTimer[i] === 0) {
+            hdlOutOri.push(hdlOut.x);
+            hdlOutOri.push(hdlOut.y);
+            this.anotherTimer[i]++;
+          }
           //
           //actually this is a function called angleBetween in processing
           var hdlOutVctr = new PVector((hdlOut.x - p.x), (hdlOut.y - p.y));
@@ -171,11 +182,12 @@ LittleCanvas.prototype.onMouseUp = function (e) {
           //
           console.log("point " + i + " has a handleOut angle value of " +
             thetaOut + ", a handleOut dist of " + hdlOutDis);
-
+          var a = 0.0001;
           while (thetaOut > 1 && hdlOutDis > 200) {
             console.log("modifying" + i + "th point's handleOut");
-            hdlOut.x = math.lerp(orgHdlOut[0], p.x, 0.0001);
-            hdlOut.y = math.lerp(orgHdlOut[1], p.y, 0.0001);
+            hdlOut.x = math.lerp(hdlOutOri[0], p.x, a);
+            hdlOut.y = math.lerp(hdlOutOri[1], p.y, a);
+            a += 0.0001;
           }
 
           var hdlIn = this.path.segments[i + 1].handleIn;
