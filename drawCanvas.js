@@ -167,20 +167,6 @@ LittleCanvas.prototype.modify = function () {
       };
       timerIn++;
     }
-    var b = 0.001;
-
-    while (thetaIn > 0.8 && hdlInDis > 40 || hdlInDis > 60) {
-      console.log("modifying " + i + "th point's handleIn distance " + hdlInDis);
-      this.path.segments[i].handleIn.x = math.lerp(hdlIn.x, p.x, b) - p.x;
-      this.path.segments[i].handleIn.y = math.lerp(hdlIn.y, p.y, b) - p.y;
-      b += 0.001;
-      hdlIn = {
-        x: p.x + this.path.segments[i].handleIn.x,
-        y: p.y + this.path.segments[i].handleIn.y,
-      };
-      hdlInVctr = new PVector(hdlIn.x - p.x, hdlIn.y - p.y);
-      hdlInDis = hdlInVctr.mag();
-    }
 
     var hdlOut = {
       x: p.x + this.path.segments[i].handleOut.x,
@@ -208,15 +194,57 @@ LittleCanvas.prototype.modify = function () {
       timerOut++;
     }
 
-    var a = 0.001;
-
-    while (thetaOut > 0.8 && hdlOutDis > 40 || hdlOutDis > 60) {
-      console.log("modifying " + i + "th point's handleOut" + hdlOutDis);
-      this.path.segments[i].handleOut.x = math.lerp(hdlOutOri.x, p.x, a) -
+    var angle = 0.001;
+    while (hdlInDis > 40 && hdlOutDis > 40) {
+      console.log("modifying " + i + "th point's handleIn distance " + hdlInDis);
+      this.path.segments[i].handleIn.x = math.lerp(hdlIn.x, p.x, angle) - p.x;
+      this.path.segments[i].handleIn.y = math.lerp(hdlIn.y, p.y, angle) - p.y;
+      hdlIn = {
+        x: p.x + this.path.segments[i].handleIn.x,
+        y: p.y + this.path.segments[i].handleIn.y,
+      };
+      hdlInVctr = new PVector(hdlIn.x - p.x, hdlIn.y - p.y);
+      hdlInDis = hdlInVctr.mag();
+      console.log("modifying " + i + "th point's handleOut distance " +
+        hdlOutDis);
+      this.path.segments[i].handleOut.x = math.lerp(hdlOutOri.x, p.x, angle) -
         p.x;
-      this.path.segments[i].handleOut.y = math.lerp(hdlOutOri.y, p.y, a) -
+      this.path.segments[i].handleOut.y = math.lerp(hdlOutOri.y, p.y, angle) -
         p.y;
-      a += 0.001;
+      hdlOut = {
+        x: p.x + this.path.segments[i].handleOut.x,
+        y: p.y + this.path.segments[i].handleOut.y
+      };
+      hdlOutVctr = new PVector((hdlOut.x - p.x), (hdlOut.y - p.y));
+      hdlOutDis = hdlOutVctr.mag();
+      angle += 0.001;
+    }
+
+    var angleIn = 0.001;
+
+    while (thetaIn > 0.3 && hdlInDis > 40 || hdlInDis > 60) {
+      console.log("modifying " + i + "th point's handleIn distance " + hdlInDis);
+      this.path.segments[i].handleIn.x = math.lerp(hdlIn.x, p.x, angleIn) - p.x;
+      this.path.segments[i].handleIn.y = math.lerp(hdlIn.y, p.y, angleIn) - p.y;
+      angleIn += 0.001;
+      hdlIn = {
+        x: p.x + this.path.segments[i].handleIn.x,
+        y: p.y + this.path.segments[i].handleIn.y,
+      };
+      hdlInVctr = new PVector(hdlIn.x - p.x, hdlIn.y - p.y);
+      hdlInDis = hdlInVctr.mag();
+    }
+
+    var angleOut = 0.001;
+
+    while (thetaOut > 0.3 && hdlOutDis > 40 || hdlOutDis > 60) {
+      console.log("modifying " + i + "th point's handleOut distance " +
+        hdlOutDis);
+      this.path.segments[i].handleOut.x = math.lerp(hdlOutOri.x, p.x, angleOut) -
+        p.x;
+      this.path.segments[i].handleOut.y = math.lerp(hdlOutOri.y, p.y, angleOut) -
+        p.y;
+      angleOut += 0.001;
       hdlOut = {
         x: p.x + this.path.segments[i].handleOut.x,
         y: p.y + this.path.segments[i].handleOut.y
@@ -243,6 +271,7 @@ LittleCanvas.prototype.onMouseUp = function (e) {
       this.path.smooth();
       this.path.simplify();
       this.modify();
+      /*
       var that = this;
       this.path.segments.forEach(function (s, index) {
         var t = new paper.PointText({
@@ -254,6 +283,7 @@ LittleCanvas.prototype.onMouseUp = function (e) {
         that.texts.push(t);
         that.textGroup.addChild(t);
       });
+*/
     }
   }
 };
@@ -267,7 +297,7 @@ LittleCanvas.prototype.getValue = function () {
       that.value.push([intersection.point.x, intersection.point.y]);
     });
   });
-  //console.log("return location data amount of " + this.value.length);
+  console.log("return location data amount of " + this.value.length);
 };
 
 LittleCanvas.prototype.setInput = function (property, start, end,
