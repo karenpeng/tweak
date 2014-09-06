@@ -1,37 +1,17 @@
-//true detective
-//mmm
-
-//var watchify = require('watchify');
-//var can = require("./can");
-//var myCanvas = document.getElementById('myCanvas');
 paper.setup(myCanvas);
 
-//paper.install(window);
-//var i = 0; window.onload = function () {
-// var canvasGroup = document.getElementById('canvasGroup');
-//with(paper){
-
-//var map = require('./map');
-//var constrain = require('./constrain');
-//var drawCanvas = require('./drawCanvas');
-//var mainControl = require('./mainControl');
+var LittleCanvas = require('./drawCanvas');
+//var editor = require('./editor');
 var littleCanvases = [];
-//var CodeMirror = require('codemirror');
-
-// var myCodeMirror = CodeMirror(document.body, {
-//   value: "function myScript(){return 100;}\n",
-//   mode: "javascript"
-// });
 
 window.onload = function () {
 
   for (var itr = 0; itr < 3; itr++) {
-    //can(itr * 340 + 20, 40);
-    littleCanvases[itr] = new littleCanvas(itr * 340 + 20, 40);
-    //console.log(map)
+    littleCanvases[itr] = new LittleCanvas(itr * 420 + 20, 40);
   }
-  //var main = new mainControl(littleCanvases);
   var tool = new paper.Tool();
+  tool.minDistance = 10;
+  tool.maxDistance = 60;
   var frameCount = 0;
 
   tool.onMouseDown = function (e) {
@@ -49,9 +29,9 @@ window.onload = function () {
   tool.onMouseUp = function (e) {
     littleCanvases.forEach(function (c) {
       c.onMouseUp(e);
-      if (isDrawingMode) {
-        c.time = 0;
-      }
+      c.setInput('y', 10, 210, 2);
+      c.time = 0;
+      c.getValue();
     });
   };
 
@@ -59,32 +39,28 @@ window.onload = function () {
     if (!isDrawingMode) {
       paper.project.activeLayer.selected = false;
       if (e.item) {
-        e.item.selected = true;
+        //e.item.fullySelected = true;
+        littleCanvases.forEach(function (c) {
+          if (e.item === c.pathGroup) {
+            e.item.children.forEach(function (p) {
+              p.fullySelected = true;
+            });
+          }
+        });
       }
     }
   };
 
   paper.view.onFrame = function (e) {
     frameCount++;
-    if (frameCount % 6 === 0) {
-      littleCanvases.forEach(function (c) {
-        if (isDrawingMode) {
-          if (c.isDrawingDone) {
-            c.getValue();
-            c.mapValue();
-          }
-        } else {
-          c.time = 0;
+    littleCanvases.forEach(function (c) {
+      if (isDrawingMode) {
+        if (c.isDrawingDone) {
+          c.mapValue(frameCount);
         }
-      });
-    }
+      } else {
+        c.time = 0;
+      }
+    });
   };
 };
-//}
-
-// var canvasGroup = document.getElementById('canvasGroup');
-// var drawCanvas = document.createElement('canvas');
-// drawCanvas.setAttribute('id', 'drawCanvas' + 0);
-// canvasGroup.appendChild(drawCanvas);
-
-//MVC???
