@@ -12,11 +12,12 @@ function LittleCanvas(beginPointX, beginPointY) {
   this.beginY = beginPointY + this.radius + 10;
   this.endX = beginPointX + this.width - this.radius;
   this.endY = beginPointY + this.height - this.radius - 10;
-  this.time = 0;
+
   this.isDrawingStart = false;
   this.isDrawingDone = false;
   this.path = new paper.Path();
-  this.interval = 5;
+  var interval = 5;
+  this.time = 0;
   this.stop = 0;
   this.texts = [];
 
@@ -53,7 +54,7 @@ function LittleCanvas(beginPointX, beginPointY) {
 
   //making interval x path
   this.verticalPaths = [];
-  for (var i = this.beginX; i <= beginPointX + this.width; i += this.interval) {
+  for (var i = this.beginX; i <= beginPointX + this.width; i += interval) {
     var verticalPath = new paper.Path.Line(i, beginPointY, i, beginPointY +
       this.height);
     //verticalPath.strokeColor = 'black';
@@ -131,12 +132,17 @@ LittleCanvas.prototype.onMouseDrag = function (e) {
 };
 
 LittleCanvas.prototype.modify = function () {
-  for (var j = 0; j < this.path.segments.length - 1; j++) {
+  console.log("origin segments length of " + this.path.segments.length);
+  for (var j = 0; j < this.path.segments.length - 1;) {
     if (this.path.segments[j].point.x >= this.path.segments[j + 1].point.x) {
       this.path.removeSegment(j + 1);
       console.log("delete the " + j + "th segment");
+      j = 0;
+    } else {
+      j++;
     }
   }
+  console.log("modified segments length of " + this.path.segments.length);
 
   for (var i = 1; i < this.path.segments.length - 1; i++) {
     var p = this.path.segments[i].point;
@@ -195,7 +201,8 @@ LittleCanvas.prototype.modify = function () {
     }
 
     var angle = 0.001;
-    while (hdlInDis > 40 && hdlOutDis > 40) {
+
+    while (hdlInDis > 30 && hdlOutDis > 30) {
       console.log("modifying " + i + "th point's handleIn distance " + hdlInDis);
       this.path.segments[i].handleIn.x = math.lerp(hdlIn.x, p.x, angle) - p.x;
       this.path.segments[i].handleIn.y = math.lerp(hdlIn.y, p.y, angle) - p.y;
@@ -220,9 +227,15 @@ LittleCanvas.prototype.modify = function () {
       angle += 0.001;
     }
 
+    /*
+    while(thetaIn > 0.2 && thetaOut > 0.2){
+      //rotate?
+    }
+*/
+
     var angleIn = 0.001;
 
-    while (thetaIn > 0.3 && hdlInDis > 40 || hdlInDis > 60) {
+    while (thetaIn > 0.15 && hdlInDis > 20 || hdlInDis > 50) {
       console.log("modifying " + i + "th point's handleIn distance " + hdlInDis);
       this.path.segments[i].handleIn.x = math.lerp(hdlIn.x, p.x, angleIn) - p.x;
       this.path.segments[i].handleIn.y = math.lerp(hdlIn.y, p.y, angleIn) - p.y;
@@ -237,7 +250,7 @@ LittleCanvas.prototype.modify = function () {
 
     var angleOut = 0.001;
 
-    while (thetaOut > 0.3 && hdlOutDis > 40 || hdlOutDis > 60) {
+    while (thetaOut > 0.15 && hdlOutDis > 20 || hdlOutDis > 50) {
       console.log("modifying " + i + "th point's handleOut distance " +
         hdlOutDis);
       this.path.segments[i].handleOut.x = math.lerp(hdlOutOri.x, p.x, angleOut) -
@@ -271,7 +284,7 @@ LittleCanvas.prototype.onMouseUp = function (e) {
       this.path.smooth();
       this.path.simplify();
       this.modify();
-      /*
+
       var that = this;
       this.path.segments.forEach(function (s, index) {
         var t = new paper.PointText({
@@ -283,7 +296,6 @@ LittleCanvas.prototype.onMouseUp = function (e) {
         that.texts.push(t);
         that.textGroup.addChild(t);
       });
-*/
     }
   }
 };

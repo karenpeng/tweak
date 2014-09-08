@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "codemirror": "4.5.0"
+    "code-mirror": "3.22.0"
   }
 }
