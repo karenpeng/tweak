@@ -8,6 +8,12 @@
         left: 0;
         background-color: black;
       }
+      #canvasWrapper{
+        width: 1280px;
+        height: 320px;
+        margin: 20px;
+        overflow: hidden;
+      }
       #myCanvas{
         width: 1280px;
         height: 320px;
@@ -22,9 +28,11 @@
     </style>
   </head>
   <body>
-    <canvas id="myCanvas" height="320" resize></canvas>
-    <!--<div id="editor">-->
-      <form><textarea id="code" name="code">
+    <div id="canvasWrapper">
+     <canvas id="myCanvas" width="1280" height="320" resize></canvas>
+    </div>
+    <!--
+    <div id="code">
       function findSequence(goal) {
         function find(start, history) {
           if (start == goal)
@@ -37,7 +45,16 @@
         }
         return find(1, "1");
       }
+    </div>
+  -->
+    <!--<div id="editor">-->
+
+      <form><textarea id="code" name="code">
+        littleCanvas.forEach(function(){
+        c.setInput('y', 10, 210, 2);
+      })
     </textarea></form>
+
   <!--</div>-->
   <button id="mode" onclick="myFunction()">draw mode</button>
   </body>

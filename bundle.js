@@ -380,13 +380,23 @@ LittleCanvas.prototype.mapValue = function (frameCount) {
 module.exports = function () {
 
   var CodeMirror = require('code-mirror');
+  var jsMode = require('code-mirror/mode/javascript.js');
+  // console.log(jsMode);
 
   var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
     lineNumbers: true,
-    mode: require('code-mirror/mode/javascript.js'),
-    theme: require('code-mirror/theme/ambiance')
+    mode: jsMode,
+    theme: require('code-mirror/theme/ambiance'),
+    tabSize: 2
   });
 
+  editor.on('change', function () {
+    complie();
+  });
+
+  function complie() {
+    console.log(editor.getValue());
+  }
 };
 },{"code-mirror":"/Users/karen/Documents/my_project/tweak/node_modules/code-mirror/codemirror.js","code-mirror/mode/javascript.js":"/Users/karen/Documents/my_project/tweak/node_modules/code-mirror/mode/javascript.js","code-mirror/theme/ambiance":"/Users/karen/Documents/my_project/tweak/node_modules/code-mirror/theme/ambiance.js"}],"/Users/karen/Documents/my_project/tweak/math.js":[function(require,module,exports){
 module.exports = math;
