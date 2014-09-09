@@ -1,7 +1,7 @@
 paper.setup(myCanvas);
 
 var LittleCanvas = require('./drawCanvas');
-//var editor = require('./editor');
+
 var littleCanvases = [];
 
 window.onload = function () {
@@ -64,3 +64,9 @@ window.onload = function () {
     });
   };
 };
+
+var myEditor = require('./editor');
+myEditor();
+
+var myParser = require('./parser');
+myParser();

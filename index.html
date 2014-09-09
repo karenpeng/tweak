@@ -8,15 +8,16 @@
         left: 0;
         background-color: black;
       }
-      #myCanvas{
-        width: 100%;
+      #canvasWrapper{
+        width: 1280px;
         height: 320px;
-        margin: 20px auto 0;
+        margin: 20px;
+        overflow: hidden;
       }
-      #canvasGroup{
-        margin: 100px auto;
-        padding: 0;
-        width: 1310px;
+      #myCanvas{
+        width: 1280px;
+        height: 320px;
+        margin: 20px;
       }
       #mode{
         position: absolute;
@@ -24,20 +25,14 @@
         left: 10px;
         padding: 5px;
       }
-      #editor{
-        width: 1270px;
-        height: 300px;
-      }
-      .CodeMirror {
-        border: 1px solid black; font-size:13px
-      }
     </style>
   </head>
   <body>
-    <canvas id="myCanvas" height="320" resize></canvas>
-    <!--<div id="canvasGroup">-->
-    <!--<div id="editor">
-      <form><textarea id="code" name="code">
+    <div id="canvasWrapper">
+     <canvas id="myCanvas" width="1280" height="320" resize></canvas>
+    </div>
+    <!--
+    <div id="code">
       function findSequence(goal) {
         function find(start, history) {
           if (start == goal)
@@ -50,8 +45,17 @@
         }
         return find(1, "1");
       }
+    </div>
+  -->
+    <!--<div id="editor">-->
+
+      <form><textarea id="code" name="code">
+        littleCanvas.forEach(function(){
+        c.setInput('y', 10, 210, 2);
+      })
     </textarea></form>
-  </div>-->
+
+  <!--</div>-->
   <button id="mode" onclick="myFunction()">draw mode</button>
   </body>
    <!--
