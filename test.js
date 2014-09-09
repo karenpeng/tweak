@@ -65,5 +65,8 @@ window.onload = function () {
   };
 };
 
-var editor = require('./editor');
-editor();
+var myEditor = require('./editor');
+myEditor();
+
+var myParser = require('./parser');
+myParser();
