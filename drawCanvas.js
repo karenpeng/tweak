@@ -224,7 +224,7 @@ LittleCanvas.prototype.modify = function () {
       };
       hdlOutVctr = new PVector((hdlOut.x - p.x), (hdlOut.y - p.y));
       hdlOutDis = hdlOutVctr.mag();
-      angle += 0.001;
+      angle += 0.01;
     }
 
     /*
@@ -248,7 +248,7 @@ LittleCanvas.prototype.modify = function () {
       hdlInDis = hdlInVctr.mag();
     }
 
-    var angleOut = 0.001;
+    var angleOut = 0.01;
 
     while (thetaOut > 0.15 && hdlOutDis > 20 || hdlOutDis > 50) {
       console.log("modifying " + i + "th point's handleOut distance " +
@@ -257,7 +257,7 @@ LittleCanvas.prototype.modify = function () {
         p.x;
       this.path.segments[i].handleOut.y = math.lerp(hdlOutOri.y, p.y, angleOut) -
         p.y;
-      angleOut += 0.001;
+      angleOut += 0.01;
       hdlOut = {
         x: p.x + this.path.segments[i].handleOut.x,
         y: p.y + this.path.segments[i].handleOut.y
@@ -296,6 +296,10 @@ LittleCanvas.prototype.onMouseUp = function (e) {
         that.texts.push(t);
         that.textGroup.addChild(t);
       });
+    } else {
+      this.path.smooth();
+      this.path.simplify();
+      this.modify();
     }
   }
 };

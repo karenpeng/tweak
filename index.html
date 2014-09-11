@@ -47,19 +47,13 @@
       }
     </div>
   -->
-    <!--<div id="editor">-->
-
-      <form><textarea id="code" name="code">
-        littleCanvas.forEach(function(){
-        c.setInput('y', 10, 210, 2);
+  <form><textarea id="code" name="code">
+      littleCanvas.forEach(function(){
+       c.setInput('y', 10, 210, 2);
       })
-    </textarea></form>
-
-  <!--</div>-->
-  <button id="mode" onclick="myFunction()">draw mode</button>
+  </textarea></form>
+  <button id="mode" onclick="myFunction()">edit the line</button>
   </body>
-   <!--
-  <script type="text/javascript" src="sketch.js"></script>-->
   <script type="text/javascript" src="lib/paper-core.min.js"></script>
     <script type="text/javascript">
     var mode = document.getElementById('mode')
@@ -67,13 +61,11 @@
     function myFunction(){
       isDrawingMode = !isDrawingMode;
       if(isDrawingMode){
-        mode.innerHTML = "draw mode"
+        mode.innerHTML = "edit the line"
       }else{
-        mode.innerHTML = "edit mode"
+        mode.innerHTML = "show animation"
       }
     }
   </script>
   <script type="text/javascript" src="bundle.js"></script>
-  <!--<script type="text/javascript" src="drawCanvas.js"></script>
-  <script type="text/javascript" src="test.js"></script>-->
 </html>

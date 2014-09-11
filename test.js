@@ -68,5 +68,5 @@ window.onload = function () {
 var myEditor = require('./editor');
 myEditor();
 
-var myParser = require('./parser');
-myParser();
+// var myScanner = require('./scanner');
+// myScanner();
