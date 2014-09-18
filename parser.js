@@ -6,7 +6,9 @@ function Parser() {
 }
 
 Parser.prototype.dictionary = function () {
-
+  'y': function () {}
+  'x': function () {}
+  'size': function () {}
 };
 
 Parser.prototype.eval = function () {
