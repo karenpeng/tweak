@@ -24,14 +24,14 @@ function LittleCanvas(beginPointX, beginPointY) {
   //making begin and end point
   this.beginP = new paper.Path.Circle(this.beginX, this.beginY, this.radius);
   this.endP = new paper.Path.Circle(this.endX, this.endY, this.radius);
-  this.beginP.strokeColor = 'white';
-  this.endP.strokeColor = 'white';
+  this.beginP.strokeColor = 'black';
+  this.endP.strokeColor = 'black';
 
   //making draw area
   this.drawArea = new paper.Path.Rectangle(beginPointX, beginPointY,
     this.width,
     this.height);
-  this.drawArea.strokeColor = 'white';
+  this.drawArea.strokeColor = 'black';
 
   //group items
   this.boundGroup = new paper.Group();
@@ -69,7 +69,7 @@ LittleCanvas.prototype.onMouseDown = function (e) {
         this.beginP.fillColor = 'blue';
         this.path.strokeColor = {
           gradient: {
-            stops: ['blue', 'red', 'yellow']
+            stops: ['blue', 'red', 'pink']
           },
           origin: [this.beginX, this.beginY],
           destination: [this.endX, this.endY]
@@ -116,7 +116,7 @@ LittleCanvas.prototype.onMouseDrag = function (e) {
       this.path.add(e.point);
 
       if (this.endP.bounds.contains(e.point)) {
-        this.endP.fillColor = "yellow";
+        this.endP.fillColor = "pink";
       }
     } else if (this.hitSegment) {
       var index = this.hitSegment.index;
@@ -274,7 +274,7 @@ LittleCanvas.prototype.onMouseUp = function (e) {
       if (!this.endP.bounds.contains(e.point)) {
         this.path.add(new paper.Point(this.endX, this.endY));
       }
-      this.endP.fillColor = 'yellow';
+      this.endP.fillColor = 'pink';
       this.path.firstSegment.point.x = this.beginX;
       this.path.firstSegment.point.y = this.beginY;
       this.path.lastSegment.point.x = this.endX;
@@ -287,14 +287,14 @@ LittleCanvas.prototype.onMouseUp = function (e) {
 
       var that = this;
       this.path.segments.forEach(function (s, index) {
-        var t = new paper.PointText({
-          point: s.point,
-          fillColor: 'white',
-          fontSize: 10,
-          content: index,
-        });
-        that.texts.push(t);
-        that.textGroup.addChild(t);
+        // var t = new paper.PointText({
+        //   point: s.point,
+        //   fillColor: 'black',
+        //   fontSize: 10,
+        //   content: index,
+        // });
+        // that.texts.push(t);
+        // that.textGroup.addChild(t);
       });
     } else {
       this.path.smooth();
@@ -345,7 +345,7 @@ LittleCanvas.prototype.setInput = function (property, start, end,
     this.boo = new paper.Path.Circle(this.beginX + this.width, this.beginY,
       this.radius);
   }
-  this.boo.fillColor = 'white';
+  this.boo.fillColor = 'black';
 };
 
 LittleCanvas.prototype.mapValue = function (frameCount) {
@@ -372,7 +372,7 @@ LittleCanvas.prototype.mapValue = function (frameCount) {
       this.time++;
     } else {
       this.stop++;
-      if (this.stop > 30) {
+      if (this.stop > 60) {
         this.time = 0;
         this.stop = 0;
       }

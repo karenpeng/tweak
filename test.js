@@ -65,8 +65,8 @@ window.onload = function () {
   };
 };
 
-var myEditor = require('./editor');
-myEditor();
+//var myEditor = require('./editor');
+//myEditor();
 
 // var myScanner = require('./scanner');
 // myScanner();

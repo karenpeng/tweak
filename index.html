@@ -6,12 +6,19 @@
         padding: 0;
         top: 0;
         left: 0;
-        background-color: black;
+        background-image: url(img/notebook_repeat.jpg);
+      }
+      #notebook_left{
+        position: absolute;
+        left: 0;
+        background-image: url(img/notebook_left.jpg);
+        width: 50px;
+        height: 100%;
       }
       #canvasWrapper{
         width: 1280px;
-        height: 320px;
-        margin: 20px;
+        height: 600px;
+        margin: 0 0 0 40px;
         overflow: hidden;
       }
       #myCanvas{
@@ -28,8 +35,9 @@
     </style>
   </head>
   <body>
+    <div id="notebook_left"></div>
     <div id="canvasWrapper">
-     <canvas id="myCanvas" width="1280" height="320" resize></canvas>
+    <canvas id="myCanvas" width="1280" height="320" resize></canvas>
     </div>
     <!--
     <div id="code">

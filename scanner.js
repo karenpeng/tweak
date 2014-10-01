@@ -15,7 +15,7 @@ module.exports = function () {
   			digit       = [0123456789]
   			space       = ' '*
   			SPACE       = ' '+ / !.
-				"
+		"
   );
 
 };
